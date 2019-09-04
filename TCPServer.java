@@ -15,7 +15,7 @@ class TCPServer
 		}
 		catch(Exception e)
 		{
-			System.out.println("HEY");
+			System.out.println(e);
 		}		
 	}
 	
@@ -43,7 +43,7 @@ class ServerThread extends Thread
 
     public void run()
     {
-        System.out.println("new thread is formed");
+        
         try
         {
             while(true)
@@ -54,7 +54,7 @@ class ServerThread extends Thread
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
                 clientSentence = inFromClient.readLine();
-                System.out.println(clientSentence);
+                // System.out.println(clientSentence);
 
                 String[] split_clientSentence = clientSentence.split(" ");
 

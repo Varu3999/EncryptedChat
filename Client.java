@@ -14,26 +14,15 @@ class Client {
         ob.registerToSend();
         ob.registerToReceive();
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Do you wat to send or receive msg:");
-        String option = inFromUser.readLine();
-        while(true){
-            if(option.equals("1")){
-                System.out.println("To:");
-                String to = inFromUser.readLine();
-                System.out.println("Message:");
-                String message = inFromUser.readLine();
-                ob.sendMessage(to , message);
-            }else{
-                while(true){
-                    BufferedReader inFromServer = new BufferedReader(new InputStreamReader(ob.clientSocketRec.getInputStream()));
-                    String response = inFromServer.readLine();
-                    System.out.println(response);
-                }
-    
-            }
+        Receiver rec = new Receiver(ob.clientSocketRec);
+        rec.start();
+        while(true){    
+            System.out.println("To:");
+            String to = inFromUser.readLine();
+            System.out.println("Message:");
+            String message = inFromUser.readLine();
+            ob.sendMessage(to , message);
         }
-        
-
     }
 
     private void sendMessage(String to , String message) throws Exception
@@ -94,6 +83,36 @@ class Client {
     }
 }
 
-class Receiver extends Thread {
+class Receiver extends Thread{
+    public Socket socketRec;
+    public BufferedReader inFromServer;
+    public Receiver(Socket socket) throws Exception{
+        socketRec = socket;
+        inFromServer = new BufferedReader(new InputStreamReader(socketRec.getInputStream()));
 
+    }
+    @Override
+    public void run(){
+        try{
+            while(true){
+                String finalMsg = "";
+                String response = inFromServer.readLine();
+                String[] splitRes = response.split(" ");
+                finalMsg += splitRes[1];
+                response = inFromServer.readLine();
+                splitRes = response.split(": ");
+                int contentLength = Integer.parseInt(splitRes[1]);
+                response = inFromServer.readLine();
+                char[] message = new char[contentLength];;
+                inFromServer.read(message , 0 , contentLength);
+                response = String.valueOf(message);
+                finalMsg += ": " + response;
+                System.out.println(finalMsg);
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+
+    }
 }
