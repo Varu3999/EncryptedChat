@@ -111,15 +111,16 @@ class ServerThread extends Thread
                     System.out.println(content_length);
 
                     // Reads the message from the client
-                    //clientSentence = inFromClient.readLine();
-                    clientSentence = inFromClient.readLine();
-                    System.out.print(clientSentence);
+                    inFromClient.readLine();
+                    char[]temp=new char[content_length];
+                    inFromClient.read(temp, 0, content_length);
+                    System.out.print(temp);
                     
                     // Finds the username from the map formed
                     Socket[] sockets1 = user_info.get(user_to_send);
                     if(sockets1[1]!=null)
                     {
-                        System.out.println("Sending Message");
+                        System.out.println(sockets1[1]);
                         Socket rec_socket_rec = sockets1[1];
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                         outToRecp.writeBytes(clientSentence);                    
