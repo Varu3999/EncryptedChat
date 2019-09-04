@@ -43,6 +43,7 @@ class ServerThread extends Thread
 
     public void run()
     {
+        System.out.println("new thread is formed");
         try
         {
             while(true)
@@ -123,7 +124,7 @@ class ServerThread extends Thread
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                         outToRecp.writeBytes(clientSentence);                    
                     }
-                    else
+                    else if(split_clientSentence[1].equals("TORECV"))
                     {
                         outToClient.writeBytes("ERROR 101 Unable to send\n");
                     }
@@ -142,6 +143,7 @@ class ServerThread extends Thread
         {
             System.out.print("Error");
         }
+
     }
 
     public Boolean isCorrectUsername(String username)
