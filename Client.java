@@ -37,7 +37,7 @@ class Client {
     {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         System.out.println(clientSocketSen);
-        outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
+        outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\nContent-length: " + message.length());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
