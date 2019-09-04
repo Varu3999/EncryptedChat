@@ -45,78 +45,98 @@ class ServerThread extends Thread
     {
         try
         {
-            System.out.println("hihihihihihih");
-            String serverSentence = "error";
-            String clientSentence;
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
-            clientSentence = inFromClient.readLine();
-            System.out.println(clientSentence);
-
-            String[] split_clientSentence = clientSentence.split(" ");
-
-            if(split_clientSentence[0].equals("REGISTER"))
+            while(true)
             {
-                if(split_clientSentence.length>3)
+                System.out.println("hihihihihihih");
+                String serverSentence = "error";
+                String clientSentence;
+                BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
+                clientSentence = inFromClient.readLine();
+                System.out.println(clientSentence);
+
+                String[] split_clientSentence = clientSentence.split(" ");
+
+                if(split_clientSentence[0].equals("REGISTER"))
                 {
-                    serverSentence = "ERROR 100 Malformed username\n";
-                }
-                if(split_clientSentence[1].equals("TOSEND"))
-                {
-                    String username = split_clientSentence[2];
-                    if(isCorrectUsername(username))
-                    {
-                        serverSentence = "REGISTERED TOSEND " + username +'\n';
-                        // Username and sockets stored in a Hashmap
-                        // {username, rec_socket}
-                        Socket[] sockets = new Socket[2];
-                        sockets[0] = socket;
-                        user_info.put(username, sockets);
-                    }
-                    else
+                    if(split_clientSentence.length>3)
                     {
                         serverSentence = "ERROR 100 Malformed username\n";
                     }
-                }
-                else if(split_clientSentence[1].equals("TORECV"))
-                {
-                    String username = split_clientSentence[2];
-                    if(isCorrectUsername(username))
+                    if(split_clientSentence[1].equals("TOSEND"))
                     {
-                        serverSentence = "REGISTERED TORECV " + username +'\n';
-                        Socket[] sockets1 = user_info.get(username);
-                        sockets1[1] = socket;                        
+                        String username = split_clientSentence[2];
+                        if(isCorrectUsername(username))
+                        {
+                            serverSentence = "REGISTERED TOSEND " + username +'\n';
+                            // Username and sockets stored in a Hashmap
+                            // {username, rec_socket}
+                            Socket[] sockets = new Socket[2];
+                            sockets[0] = socket;
+                            user_info.put(username, sockets);
+                        }
+                        else
+                        {
+                            serverSentence = "ERROR 100 Malformed username\n";
+                        }
+                    }
+                    else if(split_clientSentence[1].equals("TORECV"))
+                    {
+                        String username = split_clientSentence[2];
+                        if(isCorrectUsername(username))
+                        {
+                            serverSentence = "REGISTERED TORECV " + username +'\n';
+                            Socket[] sockets1 = user_info.get(username);
+                            sockets1[1] = socket;                        
+                        }
+                        else
+                        {
+                            serverSentence = "ERROR 100 Malformed username\n";
+                        }
+                    }
+                    outToClient.writeBytes(serverSentence);
+                }
+                else if(split_clientSentence[0].equals("SEND"))
+                {
+                    // Reads the username from the message
+                    String user_to_send = split_clientSentence[1];
+                    System.out.println(user_to_send);
+
+                    // Reads the content length from the message
+                    clientSentence = inFromClient.readLine();
+                    int content_length;
+                    split_clientSentence = clientSentence.split(": ");
+                    content_length = Integer.parseInt(split_clientSentence[1]);
+                    System.out.println(content_length);
+
+                    // Reads the message from the client
+                    clientSentence = inFromClient.readLine();
+                    clientSentence = inFromClient.readLine();
+                    System.out.print(clientSentence);
+                    
+                    // Finds the username from the map formed
+                    Socket[] sockets1 = user_info.get(user_to_send);
+                    if(sockets1[1]!=null)
+                    {
+                        System.out.println("Sending Message");
+                        Socket rec_socket_rec = sockets1[1];
+                        DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
+                        outToRecp.writeBytes(clientSentence);                    
                     }
                     else
                     {
-                        serverSentence = "ERROR 100 Malformed username\n";
+                        outToClient.writeBytes("ERROR 101 Unable to send\n");
                     }
+
                 }
+                else
+                {
+                    serverSentence = "ERROR 100\n";
+                    outToClient.writeBytes(serverSentence);
+                }
+                //System.out.println(serverSentence);
             }
-            else if(split_clientSentence[0].equals("SEND"))
-            {
-            	// Reads the username from the message
-            	String user_to_send = split_clientSentence[1];
-            	System.out.println(user_to_send);
-
-            	// Reads the content length from the message
-            	clientSentence = inFromClient.readLine();
-            	int content_length;
-            	split_clientSentence = clientSentence.split(": ");
-            	content_length = Integer.parseInt(split_clientSentence[1]);
-            	System.out.println(content_length);
-
-            	// Reads the message from the client
-            	clientSentence = inFromClient.readLine();
-            	clientSentence = inFromClient.readLine();
-            	System.out.print(clientSentence);
-            }
-            else
-            {
-                serverSentence = "ERROR 100\n";
-            }
-            //System.out.println(serverSentence);
-            outToClient.writeBytes(serverSentence);
+            
         }
         catch(Exception e)
         {
