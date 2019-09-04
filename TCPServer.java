@@ -127,7 +127,7 @@ class ServerThread extends Thread
                         rec_sentence = inFromRecp.readLine();
                         if(rec_sentence.equals("RECEIVED\n"))
                         {
-                            outToClient.writeBytes("SENT\n");
+                            outToClient.writeBytes("SENT " + user_to_send + "\n");
                         }                 
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
