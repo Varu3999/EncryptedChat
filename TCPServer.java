@@ -101,20 +101,20 @@ class ServerThread extends Thread
                 {
                     // Reads the username from the message
                     String user_to_send = split_clientSentence[1];
-                    System.out.println(user_to_send);
+                    System.out.println("Sending message to" + user_to_send);
 
                     // Reads the content length from the message
                     clientSentence = inFromClient.readLine();
                     int content_length;
                     split_clientSentence = clientSentence.split(": ");
                     content_length = Integer.parseInt(split_clientSentence[1]);
-                    System.out.println(content_length);
+                    //System.out.println(content_length);
 
                     // Reads the message from the client
                     inFromClient.readLine();
                     char[]temp=new char[content_length];
                     inFromClient.read(temp, 0, content_length);
-                    System.out.print(temp);
+                    //System.out.print(temp);
                     
                     // Finds the username from the map formed
                     Socket[] sockets1 = user_info.get(user_to_send);
@@ -122,8 +122,15 @@ class ServerThread extends Thread
                     {
                         System.out.println(sockets1[1]);
                         Socket rec_socket_rec = sockets1[1];
+                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes(clientSentence);                    
+                        outToRecp.writeBytes(clientSentence);   
+                        String rec_sentence;
+                        rec_sentence = inFromRecp.readLine();
+                        if(rec_sentence.equals("RECEIVED\n"))
+                        {
+                            outToClient.writeBytes("SENT\n");
+                        }                 
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
