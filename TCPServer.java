@@ -108,14 +108,12 @@ class ServerThread extends Thread
                     int content_length;
                     split_clientSentence = clientSentence.split(": ");
                     content_length = Integer.parseInt(split_clientSentence[1]);
-                    //System.out.println(content_length);
 
                     // Reads the message from the client
                     inFromClient.readLine();
                     char[]temp=new char[content_length];
                     inFromClient.read(temp, 0, content_length);
-                    //System.out.print(temp);
-                    
+
                     // Finds the username from the map formed
                     Socket[] sockets1 = user_info.get(user_to_send);
                     if(sockets1[1]!=null)
@@ -143,7 +141,6 @@ class ServerThread extends Thread
                     serverSentence = "ERROR 100\n";
                     outToClient.writeBytes(serverSentence);
                 }
-                //System.out.println(serverSentence);
             }
             
         }
