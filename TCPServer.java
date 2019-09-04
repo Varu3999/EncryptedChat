@@ -46,7 +46,9 @@ class ServerThread extends Thread
         System.out.println("new thread is formed");
         try
         {
-            while(true){
+            while(true)
+            {
+                System.out.println("hihihihihihih");
                 String serverSentence = "error";
                 String clientSentence;
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -93,6 +95,7 @@ class ServerThread extends Thread
                             serverSentence = "ERROR 100 Malformed username\n";
                         }
                     }
+                    outToClient.writeBytes(serverSentence);
                 }
                 else if(split_clientSentence[0].equals("SEND"))
                 {
@@ -111,14 +114,30 @@ class ServerThread extends Thread
                     clientSentence = inFromClient.readLine();
                     clientSentence = inFromClient.readLine();
                     System.out.print(clientSentence);
+                    
+                    // Finds the username from the map formed
+                    Socket[] sockets1 = user_info.get(user_to_send);
+                    if(sockets1[1]!=null)
+                    {
+                        System.out.println("Sending Message");
+                        Socket rec_socket_rec = sockets1[1];
+                        DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
+                        outToRecp.writeBytes(clientSentence);                    
+                    }
+                    else if(split_clientSentence[1].equals("TORECV"))
+                    {
+                        outToClient.writeBytes("ERROR 101 Unable to send\n");
+                    }
+
                 }
                 else
                 {
                     serverSentence = "ERROR 100\n";
+                    outToClient.writeBytes(serverSentence);
                 }
                 //System.out.println(serverSentence);
-                outToClient.writeBytes(serverSentence);
             }
+            
         }
         catch(Exception e)
         {
