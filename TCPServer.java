@@ -34,7 +34,9 @@ class TCPServer
 class ServerThread extends Thread
 {
     Socket socket;
+    String my_name;
     Hashtable<String, Socket[]> user_info;
+
     ServerThread(Socket socket, TCPServer wa_server)
     {
         this.socket = socket;
@@ -67,6 +69,7 @@ class ServerThread extends Thread
                     if(split_clientSentence[1].equals("TOSEND"))
                     {
                         String username = split_clientSentence[2];
+                        my_name = username;
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TOSEND " + username +'\n';
@@ -88,7 +91,8 @@ class ServerThread extends Thread
                         {
                             serverSentence = "REGISTERED TORECV " + username +'\n';
                             Socket[] sockets1 = user_info.get(username);
-                            sockets1[1] = socket;                        
+                            sockets1[1] = socket;  
+                            System.out.println(socket);                      
                         }
                         else
                         {
@@ -113,16 +117,17 @@ class ServerThread extends Thread
                     inFromClient.readLine();
                     char[]temp=new char[content_length];
                     inFromClient.read(temp, 0, content_length);
+                    String sending_message = String.valueOf(temp);
 
                     // Finds the username from the map formed
                     Socket[] sockets1 = user_info.get(user_to_send);
+        
                     if(sockets1[1]!=null)
                     {
-                        System.out.println(sockets1[1]);
                         Socket rec_socket_rec = sockets1[1];
                         BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes(clientSentence);   
+                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);   
                         String rec_sentence;
                         rec_sentence = inFromRecp.readLine();
                         if(rec_sentence.equals("RECEIVED\n"))

@@ -95,6 +95,7 @@ class Receiver extends Thread{
     public void run(){
         try{
             while(true){
+                
                 String finalMsg = "";
                 String response = inFromServer.readLine();
                 String[] splitRes = response.split(" ");
