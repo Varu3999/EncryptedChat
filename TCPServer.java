@@ -48,7 +48,7 @@ class ServerThread extends Thread
         {
             while(true)
             {
-                System.out.println("hihihihihihih");
+    
                 String serverSentence = "error";
                 String clientSentence;
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -111,7 +111,7 @@ class ServerThread extends Thread
                     System.out.println(content_length);
 
                     // Reads the message from the client
-                    clientSentence = inFromClient.readLine();
+                    //clientSentence = inFromClient.readLine();
                     clientSentence = inFromClient.readLine();
                     System.out.print(clientSentence);
                     
@@ -141,7 +141,7 @@ class ServerThread extends Thread
         }
         catch(Exception e)
         {
-            System.out.print("Error");
+            System.out.print(e);
         }
 
     }
