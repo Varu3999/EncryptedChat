@@ -106,10 +106,8 @@ class ServerThread extends Thread
                             outToClient.writeBytes(serverSentence);
                         }
                         
-                    }
-                       
+                    }                 
                                      
-                    
                 }
                 else if(split_clientSentence[0].equals("SEND"))
                 {
@@ -160,13 +158,22 @@ class ServerThread extends Thread
         }
         catch(Exception e)
         {
-            System.out.print(e);
+            user_info.remove(my_name);
+            System.out.println("DEREGISTERED " + my_name);
         }
 
     }
 
     public Boolean isCorrectUsername(String username)
     {
-        return username.matches("[a-zA-Z0-9]+");
+        Boolean f = username.matches("[a-zA-Z0-9]+");
+        if(f)
+        {
+            if(user_info.contains(username))
+            {
+                f = false;
+            }
+        }
+        return f;
     }
 }
