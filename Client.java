@@ -10,6 +10,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+
+import java.util.Base64;
+
 import java.io.*;
 import java.net.*;
 class Client {
@@ -20,11 +23,14 @@ class Client {
     public static String hostIP = "localhost";
     public Socket clientSocketSen;
     public Socket clientSocketRec;
+    public byte[] publicKey;
+    public byte[] privateKey;
 
     public static void main(String argv[]) 
     {
         try{
             Client ob = new Client();
+            ob.generateKeyPair();
             ob.registerToSend();
             ob.registerToReceive();
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
@@ -85,7 +91,8 @@ class Client {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         userName = inFromUser.readLine();
-        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n\n");
+        String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
+        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB + "\n\n");
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
 
@@ -110,7 +117,7 @@ class Client {
             registerToReceive();
         }
     }
-    public static KeyPair generateKeyPair()
+    public void generateKeyPair()
             throws NoSuchAlgorithmException, NoSuchProviderException {
 
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
@@ -121,10 +128,12 @@ class Client {
         keyGen.initialize(512, random);
 
         KeyPair generateKeyPair = keyGen.generateKeyPair();
-        return generateKeyPair;
+        
+        publicKey = generateKeyPair.getPublic().getEncoded();
+        privateKey = generateKeyPair.getPrivate().getEncoded();
     }
-    
-    public static byte[] encrypt(byte[] publicKey, byte[] inputData)
+
+    public byte[] encrypt(byte[] publicKey, byte[] inputData)
             throws Exception {
         PublicKey key = KeyFactory.getInstance(ALGORITHM)
                 .generatePublic(new X509EncodedKeySpec(publicKey));
@@ -137,7 +146,7 @@ class Client {
         return encryptedBytes;
     }
 
-    public static byte[] decrypt(byte[] privateKey, byte[] inputData)
+    public byte[] decrypt(byte[] privateKey, byte[] inputData)
             throws Exception {
 
         PrivateKey key = KeyFactory.getInstance(ALGORITHM)
