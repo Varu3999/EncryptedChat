@@ -64,7 +64,7 @@ public class CryptographyExample {
 
         byte[] encryptedData = encrypt(publicKey,
                 "hi there".getBytes());
-
+        
         byte[] decryptedData = decrypt(privateKey, encryptedData);
 
         System.out.println(new String(encryptedData));
