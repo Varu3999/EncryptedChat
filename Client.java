@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 class Client {
 
-    public static int port = 6789;
+    public static int port = 1234;
     public String userName = "";
     public static String hostIP = "localhost";
     public Socket clientSocketSen;
@@ -98,6 +98,7 @@ class Receiver extends Thread{
                     String finalMsg = "";
                     String sender = "";
                     String response = inFromServer.readLine();
+                    
                     String[] splitRes = response.split(" ");
                     finalMsg += splitRes[1];
                     sender = splitRes[1];
@@ -112,7 +113,8 @@ class Receiver extends Thread{
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
-                    outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
+                    //outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
+                    System.out.println(e);
                 }   
             }
         }

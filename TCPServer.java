@@ -62,9 +62,11 @@ class ServerThread extends Thread
 
                 if(split_clientSentence[0].equals("REGISTER"))
                 {
+                    inFromClient.readLine();
                     if(split_clientSentence.length>3)
                     {
                         serverSentence = "ERROR 100 Malformed username\n";
+                        outToClient.writeBytes(serverSentence);
                     }
                     if(split_clientSentence[1].equals("TOSEND"))
                     {
@@ -78,10 +80,12 @@ class ServerThread extends Thread
                             Socket[] sockets = new Socket[2];
                             sockets[0] = socket;
                             user_info.put(username, sockets);
+                            outToClient.writeBytes(serverSentence);
                         }
                         else
                         {
                             serverSentence = "ERROR 100 Malformed username\n\n";
+                            outToClient.writeBytes(serverSentence);
                         }
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
@@ -92,14 +96,20 @@ class ServerThread extends Thread
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
                             Socket[] sockets1 = user_info.get(username);
                             sockets1[1] = socket;  
+                            outToClient.writeBytes(serverSentence);
+                            this.stop();
                                             
                         }
                         else
                         {
                             serverSentence = "ERROR 100 Malformed username\n";
+                            outToClient.writeBytes(serverSentence);
                         }
+                        
                     }
-                    outToClient.writeBytes(serverSentence);
+                       
+                                     
+                    
                 }
                 else if(split_clientSentence[0].equals("SEND"))
                 {
@@ -120,18 +130,17 @@ class ServerThread extends Thread
                     String sending_message = String.valueOf(temp);
 
                     // Finds the username from the map formed
-                    Socket[] sockets1 = user_info.get(user_to_send);
+                    Socket[] sockets11 = user_info.get(user_to_send);
         
-                    if(sockets1[1]!=null)
+                    if(sockets11[1]!=null)
                     {
-                        Socket rec_socket_rec = sockets1[1];
+                        Socket rec_socket_rec = sockets11[1];
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
-                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);  
+                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
+                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                         rec_sentence = inFromRecp.readLine();
                         inFromRecp.readLine();
-                        System.out.println(rec_sentence); 
                         if(rec_sentence.equals("RECEIVED " + my_name))
                         {
                             outToClient.writeBytes("SENT " + user_to_send + "\n\n");
@@ -140,14 +149,13 @@ class ServerThread extends Thread
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
-                        outToClient.writeBytes("ERROR 101 Unable to send\n");
+                        outToClient.writeBytes("ERROR 101 Unable to send\n\n");
                     }
 
                 }
                 else
                 {
-                    serverSentence = "ERROR 100\n";
-                    outToClient.writeBytes(serverSentence);
+                    System.out.println("error" + clientSentence);
                 }
             }
             
