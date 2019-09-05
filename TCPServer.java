@@ -92,7 +92,7 @@ class ServerThread extends Thread
                             serverSentence = "REGISTERED TORECV " + username +'\n';
                             Socket[] sockets1 = user_info.get(username);
                             sockets1[1] = socket;  
-                            System.out.println(socket);                      
+                                            
                         }
                         else
                         {
@@ -105,7 +105,7 @@ class ServerThread extends Thread
                 {
                     // Reads the username from the message
                     String user_to_send = split_clientSentence[1];
-                    System.out.println("Sending message to" + user_to_send);
+                    System.out.println("Sending message to " + user_to_send);
 
                     // Reads the content length from the message
                     clientSentence = inFromClient.readLine();
@@ -125,15 +125,17 @@ class ServerThread extends Thread
                     if(sockets1[1]!=null)
                     {
                         Socket rec_socket_rec = sockets1[1];
+                        String rec_sentence;
                         BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                         outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);   
-                        String rec_sentence;
                         rec_sentence = inFromRecp.readLine();
-                        if(rec_sentence.equals("RECEIVED\n"))
+                        
+                        if(rec_sentence.equals("RECEIVED " + my_name))
                         {
-                            outToClient.writeBytes("SENT " + user_to_send + "\n");
-                        }                 
+                            outToClient.writeBytes("SENT " + user_to_send + "\n\n");
+                        }
+                        System.out.println(rec_sentence);           
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
