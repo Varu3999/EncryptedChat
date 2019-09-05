@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 class Client {
 
-    public static int port = 1234;
+    public static int port = 6789;
     public String userName = "";
     public static String hostIP = "localhost";
     public Socket clientSocketSen;
@@ -29,7 +29,7 @@ class Client {
     {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
-        outToServer.writeBytes("SEND " + to);
+        // outToServer.writeBytes("SEND " + to);
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
@@ -57,6 +57,7 @@ class Client {
         outToServer.writeBytes("REGISTER TOSEND " + userName + "\n\n");
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
+
         if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
             System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
             clientSocketSen.close();
@@ -108,11 +109,10 @@ class Receiver extends Thread{
                     inFromServer.read(message , 0 , contentLength);
                     response = String.valueOf(message);
                     finalMsg += ": " + response;
-                    
-                    outToServer.writeBytes("RECEIVED hi\n\n");
+                    outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
-                    outToServer.writeBytes("ERROR 103 Header incomplete");
+                    outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
                 }   
             }
         }

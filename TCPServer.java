@@ -72,7 +72,7 @@ class ServerThread extends Thread
                         my_name = username;
                         if(isCorrectUsername(username))
                         {
-                            serverSentence = "REGISTERED TOSEND " + username +'\n';
+                            serverSentence = "REGISTERED TOSEND " + username +"\n\n";
                             // Username and sockets stored in a Hashmap
                             // {username, rec_socket}
                             Socket[] sockets = new Socket[2];
@@ -81,7 +81,7 @@ class ServerThread extends Thread
                         }
                         else
                         {
-                            serverSentence = "ERROR 100 Malformed username\n";
+                            serverSentence = "ERROR 100 Malformed username\n\n";
                         }
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
@@ -89,7 +89,7 @@ class ServerThread extends Thread
                         String username = split_clientSentence[2];
                         if(isCorrectUsername(username))
                         {
-                            serverSentence = "REGISTERED TORECV " + username +'\n';
+                            serverSentence = "REGISTERED TORECV " + username +"\n\n";
                             Socket[] sockets1 = user_info.get(username);
                             sockets1[1] = socket;  
                                             
@@ -125,17 +125,18 @@ class ServerThread extends Thread
                     if(sockets1[1]!=null)
                     {
                         Socket rec_socket_rec = sockets1[1];
-                        String rec_sentence;
-                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
+                        String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);   
+                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(rec_socket_rec.getInputStream()));
+                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);  
                         rec_sentence = inFromRecp.readLine();
-                        
+                        inFromRecp.readLine();
+                        System.out.println(rec_sentence); 
                         if(rec_sentence.equals("RECEIVED " + my_name))
                         {
                             outToClient.writeBytes("SENT " + user_to_send + "\n\n");
                         }
-                        System.out.println(rec_sentence);           
+                                  
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
