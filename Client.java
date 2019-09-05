@@ -17,7 +17,7 @@ class Client {
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
             Receiver rec = new Receiver(ob.clientSocketRec);
             rec.start();
-            System.out.println("You can send message by typing @(username) (message) and press enter:");
+            System.out.println("You can send message by typing @(username) (message) and press enter");
             String message = "";
             String to = "";
             while(true){    
