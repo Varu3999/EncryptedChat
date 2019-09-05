@@ -8,21 +8,39 @@ class Client {
     public Socket clientSocketSen;
     public Socket clientSocketRec;
 
-    public static void main(String argv[]) throws Exception
+    public static void main(String argv[]) 
     {
-        Client ob = new Client();
-        ob.registerToSend();
-        ob.registerToReceive();
-        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        Receiver rec = new Receiver(ob.clientSocketRec);
-        rec.start();
-        while(true){    
-            System.out.println("To:");
-            String to = inFromUser.readLine();
-            System.out.println("Message:");
-            String message = inFromUser.readLine();
-            ob.sendMessage(to , message);
+        try{
+            Client ob = new Client();
+            ob.registerToSend();
+            ob.registerToReceive();
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            Receiver rec = new Receiver(ob.clientSocketRec);
+            rec.start();
+            System.out.println("You can send message by typing @(username) (message) and press enter:");
+            String message = "";
+            String to = "";
+            while(true){    
+                String msg = inFromUser.readLine();
+                if(msg.charAt(0) == '@'){
+                    String[] msgSplit = msg.split(" ",2);
+                    if(msgSplit[1].length() > 0 && msgSplit[0].length() > 0){
+                        message = msgSplit[1];
+                        msgSplit = msgSplit[0].split("@",2);
+                        to = msgSplit[1];
+                        ob.sendMessage(to , message);
+                    }else{
+                        System.out.println("WRONG FORMAT!!");
+                    }
+
+                }else{
+                    System.out.println("WRONG FORMAT!!");
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Server is DOWN!!!!!!!");
         }
+        
     }
 
     private void sendMessage(String to , String message) throws Exception

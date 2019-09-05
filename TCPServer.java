@@ -144,14 +144,12 @@ class ServerThread extends Thread
                         if(rec_sentence.equals("RECEIVED " + my_name))
                         {
                             outToClient.writeBytes("SENT " + user_to_send + "\n\n");
-                        }
-                                  
+                        }                                  
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
                         outToClient.writeBytes("ERROR 101 Unable to send\n\n");
                     }
-
                 }
                 else
                 {
