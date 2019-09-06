@@ -86,7 +86,8 @@ class ServerThread extends Thread
                             int key_length =  Integer.parseInt(key_len);
                             char[]temp1=new char[key_length];
                             inFromClient.read(temp1, 0, key_length);
-                            String public_key = String.valueOf(temp1);                            
+                            String public_key = String.valueOf(temp1);
+                            System.out.println(public_key);                            
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
                             user_info.put(username, p);                          
                         }
@@ -103,8 +104,9 @@ class ServerThread extends Thread
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
-                            Socket[] sockets1 = user_info.get(username).getValue();
+                            Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
+                            System.out.print(socket);
                             outToClient.writeBytes(serverSentence);
                             this.stop();
                                             
