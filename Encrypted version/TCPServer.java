@@ -1,10 +1,11 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javafx.util.Pair;
 
 class TCPServer 
 {
-	Hashtable<String, Socket[]> map;
+	Hashtable<String, Pair<String, Socket[]>> map;
 	ServerSocket welcomeSocket;
 	TCPServer(int port_number)
 	{
@@ -35,7 +36,7 @@ class ServerThread extends Thread
 {
     Socket socket;
     String my_name;
-    Hashtable<String, Socket[]> user_info;
+    Hashtable<String, Pair<String, Socket[]>> user_info;
 
     ServerThread(Socket socket, TCPServer wa_server)
     {
@@ -62,7 +63,7 @@ class ServerThread extends Thread
 
                 if(split_clientSentence[0].equals("REGISTER"))
                 {
-                    inFromClient.readLine();
+                    
                     if(split_clientSentence.length>3)
                     {
                         serverSentence = "ERROR 100 Malformed username\n";
@@ -70,6 +71,7 @@ class ServerThread extends Thread
                     }
                     if(split_clientSentence[1].equals("TOSEND"))
                     {
+                        
                         String username = split_clientSentence[2];
                         my_name = username;
                         if(isCorrectUsername(username))
@@ -79,8 +81,14 @@ class ServerThread extends Thread
                             // {username, rec_socket}
                             Socket[] sockets = new Socket[2];
                             sockets[0] = socket;
-                            user_info.put(username, sockets);
                             outToClient.writeBytes(serverSentence);
+                            String key_len = inFromClient.readLine();
+                            int key_length =  Integer.parseInt(key_len);
+                            char[]temp1=new char[key_length];
+                            inFromClient.read(temp1, 0, key_length);
+                            String public_key = String.valueOf(temp1);                            
+                            Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
+                            user_info.put(username, p);                          
                         }
                         else
                         {
@@ -90,11 +98,12 @@ class ServerThread extends Thread
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
+                        inFromClient.readLine();
                         String username = split_clientSentence[2];
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
-                            Socket[] sockets1 = user_info.get(username);
+                            Socket[] sockets1 = user_info.get(username).getValue();
                             sockets1[1] = socket;  
                             outToClient.writeBytes(serverSentence);
                             this.stop();
@@ -128,7 +137,7 @@ class ServerThread extends Thread
                     String sending_message = String.valueOf(temp);
 
                     // Finds the username from the map formed
-                    Socket[] sockets11 = user_info.get(user_to_send);
+                    Socket[] sockets11 = user_info.get(user_to_send).getValue();
         
                     if(sockets11[1]!=null)
                     {
