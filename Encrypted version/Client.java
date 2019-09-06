@@ -78,7 +78,7 @@ class Client {
         inFromServer.read(messagec , 0 , keyLen);
         response = String.valueOf(messagec);
         byte[] encrytpMsg = encrypt(response.getBytes(), message.getBytes());
-        message = Base64.getEncoder().encodeToString(encrytpMsg);
+        // message = Base64.getEncoder().encodeToString(encrytpMsg);
         outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
         // outToServer.writeBytes("SEND " + to);
         
