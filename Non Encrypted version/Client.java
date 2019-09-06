@@ -1,36 +1,16 @@
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-
-import javax.crypto.Cipher;
-
-import java.util.Base64;
-
 import java.io.*;
 import java.net.*;
-class Client {
-    
-    private static final String ALGORITHM = "RSA";
+class Client {    
     public static int port = 1234;
     public String userName = "";
     public static String hostIP = "localhost";
     public Socket clientSocketSen;
     public Socket clientSocketRec;
-    public byte[] publicKey;
-    public byte[] privateKey;
-
+    
     public static void main(String argv[]) 
     {
         try{
             Client ob = new Client();
-            ob.generateKeyPair();
             ob.registerToSend();
             ob.registerToReceive();
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
@@ -91,8 +71,8 @@ class Client {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         userName = inFromUser.readLine();
-        String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
-        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB + "\n\n");
+        
+        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n\n");
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
 
@@ -117,48 +97,7 @@ class Client {
             registerToReceive();
         }
     }
-    public void generateKeyPair()
-            throws NoSuchAlgorithmException, NoSuchProviderException {
-
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
-
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-
-        // 512 is keysize
-        keyGen.initialize(512, random);
-
-        KeyPair generateKeyPair = keyGen.generateKeyPair();
-        
-        publicKey = generateKeyPair.getPublic().getEncoded();
-        privateKey = generateKeyPair.getPrivate().getEncoded();
-    }
-
-    public byte[] encrypt(byte[] publicKey, byte[] inputData)
-            throws Exception {
-        PublicKey key = KeyFactory.getInstance(ALGORITHM)
-                .generatePublic(new X509EncodedKeySpec(publicKey));
-
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-
-        byte[] encryptedBytes = cipher.doFinal(inputData);
-
-        return encryptedBytes;
-    }
-
-    public byte[] decrypt(byte[] privateKey, byte[] inputData)
-            throws Exception {
-
-        PrivateKey key = KeyFactory.getInstance(ALGORITHM)
-                .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
-
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, key);
-
-        byte[] decryptedBytes = cipher.doFinal(inputData);
-
-        return decryptedBytes;
-    }
+    
 
 }
 
