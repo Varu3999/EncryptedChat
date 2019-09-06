@@ -65,11 +65,24 @@ class Client {
     private void sendMessage(String to , String message) throws Exception
     {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
-        // outToServer.writeBytes("FETCHKEY " + to + "\n\n");
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
+        outToServer.writeBytes("FETCHKEY " + to + "\n\n");
+        String response = inFromServer.readLine();
+        if(!response.equals("KEYIS")){
+            System.out.println("User doesn't Exists!!!");
+            return;
+        }
+        response = inFromServer.readLine();
+        int keyLen = Integer.parseInt(response);
+        char[] messagec = new char[keyLen];;
+        inFromServer.read(messagec , 0 , keyLen);
+        response = String.valueOf(messagec);
+        byte[] encrytpMsg = encrypt(response.getBytes(), message.getBytes());
+        message = Base64.getEncoder().encodeToString(encrytpMsg);
         outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
         // outToServer.writeBytes("SEND " + to);
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
-        String response = inFromServer.readLine();
+        
+        response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
         if(!splitRes[0].equals("SENT")){
             if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
