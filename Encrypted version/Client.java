@@ -65,6 +65,7 @@ class Client {
     private void sendMessage(String to , String message) throws Exception
     {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
+        // outToServer.writeBytes("FETCHKEY " + to + "\n\n");
         outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
         // outToServer.writeBytes("SEND " + to);
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
@@ -92,7 +93,7 @@ class Client {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         userName = inFromUser.readLine();
         String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
-        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB + "\n\n");
+        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n" + publicKeyB);
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
 
