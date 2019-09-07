@@ -81,15 +81,15 @@ class ServerThread extends Thread
                             // {username, rec_socket}
                             Socket[] sockets = new Socket[2];
                             sockets[0] = socket;
-                            outToClient.writeBytes(serverSentence);
                             String key_len = inFromClient.readLine();
                             int key_length =  Integer.parseInt(key_len);
                             char[]temp1=new char[key_length];
                             inFromClient.read(temp1, 0, key_length);
                             String public_key = String.valueOf(temp1);
-                            System.out.println(public_key);                            
+                            //System.out.println(public_key);                            
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
-                            user_info.put(username, p);                          
+                            user_info.put(username, p);    
+                            outToClient.writeBytes(serverSentence);                      
                         }
                         else
                         {
@@ -106,7 +106,7 @@ class ServerThread extends Thread
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
                             Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
-                            System.out.print(socket);
+                            //System.out.print(socket);
                             outToClient.writeBytes(serverSentence);
                             this.stop();
                                             
@@ -162,7 +162,7 @@ class ServerThread extends Thread
                 }
                 else
                 {
-                    System.out.println("error" + clientSentence);
+                    System.out.println("Unable to send");
                 }
             }
             
