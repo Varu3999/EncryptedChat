@@ -4,6 +4,12 @@
             "type": "java",
             "name": "CodeLens (Launch) - TCPServer",
             "request": "launch",
+            "mainClass": "TCPServer"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TCPServer",
+            "request": "launch",
             "mainClass": "TCPServer",
             "projectName": "EncryptedChat_7c155a17"
         },
