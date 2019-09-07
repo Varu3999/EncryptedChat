@@ -179,6 +179,7 @@ class Client {
 class Receiver extends Thread{
     public Socket socketRec;
     public BufferedReader inFromServer;
+    private static final String ALGORITHM = "RSA";
     DataOutputStream outToServer;
     public byte[] privateKey;
     public Receiver(Socket socket , byte[] key) throws Exception{
