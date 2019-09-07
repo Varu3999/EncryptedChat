@@ -74,7 +74,7 @@ class Client {
         }
         response = inFromServer.readLine();
         int keyLen = Integer.parseInt(response);
-        char[] messagec = new char[keyLen];;
+        char[] messagec = new char[keyLen];
         inFromServer.read(messagec , 0 , keyLen);
         response = String.valueOf(messagec);
         byte[] encrytpMsg = encrypt(response.getBytes(), message.getBytes());
