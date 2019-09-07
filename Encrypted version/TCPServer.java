@@ -60,6 +60,7 @@ class ServerThread extends Thread
                 // System.out.println(clientSentence);
 
                 String[] split_clientSentence = clientSentence.split(" ");
+                System.out.println("ehyy "+split_clientSentence[0]);
 
                 if(split_clientSentence[0].equals("REGISTER"))
                 {
@@ -105,7 +106,7 @@ class ServerThread extends Thread
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
-                            System.out.println(user_info.get(username));
+                            //System.out.println(user_info.get(username));
                             Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
                             //System.out.print(socket);
@@ -158,6 +159,14 @@ class ServerThread extends Thread
                     }catch(Exception e){
                         outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
                     }
+                }
+                else if(split_clientSentence[0].equals("FETCHKEY"))
+                {
+                    inFromClient.readLine();
+                    String user_of_key = split_clientSentence[1];                    
+                    String key_of_user = user_info.get(user_of_key).getKey();
+                    System.out.println(key_of_user);
+                    outToClient.writeBytes("KEYIS\n"+ key_of_user.length() +"\n"+key_of_user);
                 }
                 else
                 {

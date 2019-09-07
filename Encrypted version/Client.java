@@ -1,5 +1,6 @@
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.util.Base64;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -72,27 +73,33 @@ class Client {
             System.out.println("User doesn't Exists!!!");
             return;
         }
-        response = inFromServer.readLine();
-        int keyLen = Integer.parseInt(response);
-        char[] messagec = new char[keyLen];;
-        inFromServer.read(messagec , 0 , keyLen);
-        response = String.valueOf(messagec);
-        byte[] encrytpMsg = encrypt(response.getBytes(), message.getBytes());
-        message = Base64.getEncoder().encodeToString(encrytpMsg);
-        outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
-        outToServer.writeBytes("SEND " + to);
-        
-        response = inFromServer.readLine();
-        String[] splitRes = response.split(" ");
-        if(!splitRes[0].equals("SENT")){
-            if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
-                System.out.println("Unable To Send ....");
+        try{
+            response = inFromServer.readLine();
+            System.out.println(response);
+            int keyLen = Integer.parseInt(response);
+            char[] messagec = new char[keyLen];;
+            inFromServer.read(messagec , 0 , keyLen);
+            response = String.valueOf(messagec);
+            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response.getBytes()), message.getBytes());
+            message = Base64.getEncoder().encodeToString(encrytpMsg);
+            outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
+            outToServer.writeBytes("SEND " + to);
+            
+            response = inFromServer.readLine();
+            String[] splitRes = response.split(" ");
+            if(!splitRes[0].equals("SENT")){
+                if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
+                    System.out.println("Unable To Send ....");
+                }else{
+                    System.out.println("Header Incomplete ....");
+                }
             }else{
-                System.out.println("Header Incomplete ....");
-            }
-        }else{
-            System.out.println("Message Sent Successfully ....!!");
+                System.out.println("Message Sent Successfully ....!!");
+            }    
+        }catch(Exception e){
+            System.out.println(e);
         }
+        
     }
 
     private void registerToSend() throws Exception
@@ -207,12 +214,13 @@ class Receiver extends Thread{
                     char[] message = new char[contentLength];;
                     inFromServer.read(message , 0 , contentLength);
                     response = String.valueOf(message);
-                    response = Base64.getEncoder().encodeToString(decrypt(privateKey, response.getBytes()));
+                    // response = Base64.getEncoder().encodeToString(decrypt(privateKey, response.getBytes()));
                     finalMsg += ": " + response;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
                     //outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
+                    System.out.println(e);
                     System.out.println("Server Is Down");
                     System.exit(0);
                     break;
