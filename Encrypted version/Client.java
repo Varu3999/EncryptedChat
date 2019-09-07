@@ -34,7 +34,7 @@ class Client {
             ob.registerToSend();
             ob.registerToReceive();
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            Receiver rec = new Receiver(ob.clientSocketRec);
+            Receiver rec = new Receiver(ob.clientSocketRec , ob.privateKey);
             rec.start();
             System.out.println("You can send message by typing @(username) (message) and press enter");
             String message = "";
@@ -180,8 +180,10 @@ class Receiver extends Thread{
     public Socket socketRec;
     public BufferedReader inFromServer;
     DataOutputStream outToServer;
-    public Receiver(Socket socket) throws Exception{
+    public byte[] privateKey;
+    public Receiver(Socket socket , byte[] key) throws Exception{
         socketRec = socket;
+        privateKey = key;
         inFromServer = new BufferedReader(new InputStreamReader(socketRec.getInputStream()));
         outToServer = new DataOutputStream(socketRec.getOutputStream());
     }
@@ -204,6 +206,7 @@ class Receiver extends Thread{
                     char[] message = new char[contentLength];;
                     inFromServer.read(message , 0 , contentLength);
                     response = String.valueOf(message);
+                    response = Base64.getEncoder().encodeToString(decrypt(privateKey, response.getBytes()));
                     finalMsg += ": " + response;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
@@ -219,5 +222,18 @@ class Receiver extends Thread{
             System.out.println("hi");
         }
 
+    }
+    public byte[] decrypt(byte[] privateKey, byte[] inputData)
+            throws Exception {
+
+        PrivateKey key = KeyFactory.getInstance(ALGORITHM)
+                .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
+
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+
+        byte[] decryptedBytes = cipher.doFinal(inputData);
+
+        return decryptedBytes;
     }
 }
