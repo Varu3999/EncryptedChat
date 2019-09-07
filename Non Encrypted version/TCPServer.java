@@ -126,12 +126,11 @@ class ServerThread extends Thread
                     char[]temp=new char[content_length];
                     inFromClient.read(temp, 0, content_length);
                     String sending_message = String.valueOf(temp);
-
-                    // Finds the username from the map formed
-                    Socket[] sockets11 = user_info.get(user_to_send);
-        
-                    if(sockets11[1]!=null)
-                    {
+                    try{
+                        // Finds the username from the map formed
+                        Socket[] sockets11 = user_info.get(user_to_send);
+            
+                    
                         Socket rec_socket_rec = sockets11[1];
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
@@ -142,12 +141,10 @@ class ServerThread extends Thread
                         if(rec_sentence.equals("RECEIVED " + my_name))
                         {
                             outToClient.writeBytes("SENT " + user_to_send + "\n\n");
-                        }                                  
-                    }
-                    else if(split_clientSentence[1].equals("TORECV"))
-                    {
-                        outToClient.writeBytes("ERROR 101 Unable to send\n\n");
-                    }
+                        }   
+                    }catch(Exception e){
+                        outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
+                    }   
                 }
                 else
                 {

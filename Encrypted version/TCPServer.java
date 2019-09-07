@@ -81,15 +81,16 @@ class ServerThread extends Thread
                             // {username, rec_socket}
                             Socket[] sockets = new Socket[2];
                             sockets[0] = socket;
-                            outToClient.writeBytes(serverSentence);
                             String key_len = inFromClient.readLine();
                             int key_length =  Integer.parseInt(key_len);
                             char[]temp1=new char[key_length];
                             inFromClient.read(temp1, 0, key_length);
                             String public_key = String.valueOf(temp1);
-                            System.out.println(public_key);                            
+                            // System.out.println(public_key);                            
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
-                            user_info.put(username, p);                          
+                            System.out.println(username);
+                            user_info.put(username, p);
+                            outToClient.writeBytes(serverSentence);
                         }
                         else
                         {
@@ -99,11 +100,13 @@ class ServerThread extends Thread
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
                     {
+                        
                         inFromClient.readLine();
                         String username = split_clientSentence[2];
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TORECV " + username +"\n\n";
+                            System.out.println(user_info.get(username));
                             Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
                             System.out.print(socket);
@@ -116,6 +119,7 @@ class ServerThread extends Thread
                             serverSentence = "ERROR 100 Malformed username\n";
                             outToClient.writeBytes(serverSentence);
                         }
+                            
                         
                     }                 
                                      
@@ -137,12 +141,9 @@ class ServerThread extends Thread
                     char[]temp=new char[content_length];
                     inFromClient.read(temp, 0, content_length);
                     String sending_message = String.valueOf(temp);
-
-                    // Finds the username from the map formed
-                    Socket[] sockets11 = user_info.get(user_to_send).getValue();
-        
-                    if(sockets11[1]!=null)
-                    {
+                    try{
+                        // Finds the username from the map formed
+                        Socket[] sockets11 = user_info.get(user_to_send).getValue();
                         Socket rec_socket_rec = sockets11[1];
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
@@ -154,10 +155,9 @@ class ServerThread extends Thread
                         {
                             outToClient.writeBytes("SENT " + user_to_send + "\n\n");
                         }                                  
-                    }
-                    else if(split_clientSentence[1].equals("TORECV"))
-                    {
-                        outToClient.writeBytes("ERROR 101 Unable to send\n\n");
+                        
+                    }catch(Exception e){
+                        outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
                     }
                 }
                 else
@@ -169,6 +169,7 @@ class ServerThread extends Thread
         }
         catch(Exception e)
         {
+            System.out.println(e);
             user_info.remove(my_name);
             System.out.println("DEREGISTERED " + my_name);
         }
