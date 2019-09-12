@@ -75,12 +75,11 @@ class Client {
             int keyLen = Integer.parseInt(response);
             char[] messagec = new char[keyLen];;
             inFromServer.read(messagec , 0 , keyLen);
-            response = String.valueOf(messagec);
-            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response.getBytes()), message.getBytes());
+            response = new String(messagec);
+            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
             message = Base64.getEncoder().encodeToString(encrytpMsg);
             outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
-            outToServer.writeBytes("SEND " + to);
-            
+            // outToServer.writeBytes("SEND " + to);
             response = inFromServer.readLine();
             String[] splitRes = response.split(" ");
             if(!splitRes[0].equals("SENT")){
@@ -109,6 +108,8 @@ class Client {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         userName = inFromUser.readLine();
         String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
+        //System.out.println(publicKeyB);
+        //System.out.println(publicKeyB.length());
         outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n" + publicKeyB);
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
@@ -209,8 +210,12 @@ class Receiver extends Thread{
                     response = inFromServer.readLine();
                     char[] message = new char[contentLength];;
                     inFromServer.read(message , 0 , contentLength);
-                    response = String.valueOf(message);
-                    // response = Base64.getEncoder().encodeToString(decrypt(privateKey, response.getBytes()));
+                    response = new String(message);
+                    byte[] msg;
+                    msg = Base64.getDecoder().decode(response);
+                    msg = decrypt(privateKey, msg);
+                    response = new String(msg);
+                    //decrypt(privateKey, response.getBytes())
                     finalMsg += ": " + response;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
