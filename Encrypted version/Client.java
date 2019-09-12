@@ -75,12 +75,11 @@ class Client {
             int keyLen = Integer.parseInt(response);
             char[] messagec = new char[keyLen];;
             inFromServer.read(messagec , 0 , keyLen);
-            response = String.valueOf(messagec);
-            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(String.valueOf(messagec)), message.getBytes());
+            response = new String(messagec);
+            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
             message = Base64.getEncoder().encodeToString(encrytpMsg);
             outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
             // outToServer.writeBytes("SEND " + to);
-            
             response = inFromServer.readLine();
             String[] splitRes = response.split(" ");
             if(!splitRes[0].equals("SENT")){
@@ -211,7 +210,7 @@ class Receiver extends Thread{
                     response = inFromServer.readLine();
                     char[] message = new char[contentLength];;
                     inFromServer.read(message , 0 , contentLength);
-                    response = String.valueOf(message);
+                    response = new String(message);
                     byte[] msg;
                     msg = Base64.getDecoder().decode(response);
                     msg = decrypt(privateKey, msg);
@@ -222,7 +221,7 @@ class Receiver extends Thread{
                     System.out.println(finalMsg);
                 }catch(Exception e){
                     //outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
-                    System.out.println(e);
+                    System.out.println(e.getStackTrace());
                     System.out.println("Server Is Down");
                     System.exit(0);
                     break;
