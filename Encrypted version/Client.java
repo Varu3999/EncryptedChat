@@ -216,7 +216,7 @@ class Receiver extends Thread{
                     System.out.println(finalMsg);
                 }catch(Exception e){
                     //outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
-                    System.out.println(e);
+                    System.out.println(e.getStackTrace());
                     System.out.println("Server Is Down");
                     System.exit(0);
                     break;
