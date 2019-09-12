@@ -90,10 +90,17 @@ class ServerThread extends Thread
                             System.out.println(temp1);                  
                             String public_key = String.valueOf(temp1); 
                             public_key = public_key.trim();                           
-                            System.out.println(public_key);                            
-                            Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
-                            user_info.put(username, p);    
-                            outToClient.writeBytes(serverSentence);                      
+                            System.out.println(public_key);
+                            if(public_key.length()!=128)
+                            {
+                                outToClient.writeBytes("Error 100");
+                            }     
+                            else
+                            {                       
+                                Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
+                                user_info.put(username, p);    
+                                outToClient.writeBytes(serverSentence);
+                            }                      
                         }
                         else
                         {
