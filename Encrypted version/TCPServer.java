@@ -84,11 +84,13 @@ class ServerThread extends Thread
                             sockets[0] = socket;
                             String key_len = inFromClient.readLine();
                             int key_length =  Integer.parseInt(key_len);
-                            //System.out.println(key_length);
-                            char[]temp1=new char[key_length];
+                            System.out.println(key_length);
+                            char[]temp1=new char[key_length];                            
                             inFromClient.read(temp1, 0, key_length);
-                            String public_key = String.valueOf(temp1);
-                            //System.out.println(public_key);                            
+                            System.out.println(temp1);                  
+                            String public_key = String.valueOf(temp1); 
+                            public_key = public_key.trim();                           
+                            System.out.println(public_key);                            
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
                             user_info.put(username, p);    
                             outToClient.writeBytes(serverSentence);                      
@@ -172,6 +174,7 @@ class ServerThread extends Thread
                 }
                 else
                 {
+                    System.out.println(split_clientSentence[0]);
                     System.out.println("Unable to send");
                 }
             }
