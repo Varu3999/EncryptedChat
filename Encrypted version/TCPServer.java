@@ -57,10 +57,10 @@ class ServerThread extends Thread
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
                 clientSentence = inFromClient.readLine();
-                // System.out.println(clientSentence);
+                //System.out.println(clientSentence);
 
                 String[] split_clientSentence = clientSentence.split(" ");
-                System.out.println("ehyy "+split_clientSentence[0]);
+                //System.out.println("ehyy "+split_clientSentence[0]);
 
                 if(split_clientSentence[0].equals("REGISTER"))
                 {
@@ -84,6 +84,7 @@ class ServerThread extends Thread
                             sockets[0] = socket;
                             String key_len = inFromClient.readLine();
                             int key_length =  Integer.parseInt(key_len);
+                            //System.out.println(key_length);
                             char[]temp1=new char[key_length];
                             inFromClient.read(temp1, 0, key_length);
                             String public_key = String.valueOf(temp1);
@@ -148,6 +149,7 @@ class ServerThread extends Thread
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                         outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
+                        System.out.println("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
                         BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                         rec_sentence = inFromRecp.readLine();
                         inFromRecp.readLine();
@@ -165,7 +167,7 @@ class ServerThread extends Thread
                     inFromClient.readLine();
                     String user_of_key = split_clientSentence[1];                    
                     String key_of_user = user_info.get(user_of_key).getKey();
-                    System.out.println(key_of_user);
+                    //System.out.println(key_of_user);
                     outToClient.writeBytes("KEYIS\n"+ key_of_user.length() +"\n"+key_of_user);
                 }
                 else
