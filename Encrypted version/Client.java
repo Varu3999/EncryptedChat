@@ -73,9 +73,15 @@ class Client {
             response = inFromServer.readLine();
             System.out.println(response);
             int keyLen = Integer.parseInt(response);
-            char[] messagec = new char[keyLen];;
-            inFromServer.read(messagec , 0 , keyLen);
-            response = new String(messagec);
+            int value = 0;
+            response = "";
+            while(keyLen!=0) 
+            {
+                value = inFromServer.read();
+                char c = (char)value;
+                response+=c;
+                keyLen-=1;
+            }
             byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
             message = Base64.getEncoder().encodeToString(encrytpMsg);
             outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
@@ -97,29 +103,27 @@ class Client {
         
     }
 
-    private void registerToSend() throws Exception
+    private void registerToSend()
     {
-
-        System.out.println("User Name:");
-        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        clientSocketSen = new Socket(hostIP, port);
-        
-        DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
-        userName = inFromUser.readLine();
-        String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
-        //System.out.println(publicKeyB);
-        //System.out.println(publicKeyB.length());
-        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n" + publicKeyB);
-        String response = inFromServer.readLine();
-        String[] splitRes = response.split(" ");
-
-        if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
-            System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
-            clientSocketSen.close();
-            registerToSend();
+        try{
+            System.out.println("User Name:");
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            clientSocketSen = new Socket(hostIP, port);
+            
+            DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
+            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
+            userName = inFromUser.readLine();                       
+            String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
+            outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n"+ publicKeyB);
+            String response = inFromServer.readLine();
+            String[] splitRes = response.split(" ");
+            if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
+                System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
+                registerToSend();
+            }
+        }catch(Exception e){
+            System.out.println("hihohiihi" + e);
         }
-
     }
 
     private void registerToReceive() throws Exception
@@ -208,19 +212,24 @@ class Receiver extends Thread{
                     splitRes = response.split(": ");
                     int contentLength = Integer.parseInt(splitRes[1]);
                     response = inFromServer.readLine();
-                    char[] message = new char[contentLength];;
-                    inFromServer.read(message , 0 , contentLength);
-                    response = new String(message);
+                    response = "";
+                    int value = 0;
+                    while(contentLength!=0) 
+                    {
+                        value = inFromServer.read();
+                        char c = (char)value;
+                        response+=c;
+                        contentLength-=1;
+                    }
                     byte[] msg;
                     msg = Base64.getDecoder().decode(response);
                     msg = decrypt(privateKey, msg);
                     response = new String(msg);
-                    //decrypt(privateKey, response.getBytes())
+                   
                     finalMsg += ": " + response;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
-                    //outToServer.writeBytes("ERROR 103 Header incomplete\n\n");
                     System.out.println(e.getStackTrace());
                     System.out.println("Server Is Down");
                     System.exit(0);

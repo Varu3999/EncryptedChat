@@ -24,9 +24,11 @@ class TCPServer
     {        
         TCPServer wa_server = new TCPServer(1234);
         while(true)
-        {
+        {   
+
             Socket conn_socket = wa_server.welcomeSocket.accept();
-            (new ServerThread(conn_socket, wa_server)).start();
+            ServerThread st= new ServerThread(conn_socket, wa_server);
+            st.start();
         }
     }
 }
@@ -57,15 +59,12 @@ class ServerThread extends Thread
                 BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
                 clientSentence = inFromClient.readLine();
-                //System.out.println(clientSentence);
-
                 String[] split_clientSentence = clientSentence.split(" ");
-                //System.out.println("ehyy "+split_clientSentence[0]);
 
                 if(split_clientSentence[0].equals("REGISTER"))
                 {
                     
-                    if(split_clientSentence.length>3)
+                    if(split_clientSentence.length>5)
                     {
                         serverSentence = "ERROR 100 Malformed username\n";
                         outToClient.writeBytes(serverSentence);
@@ -78,29 +77,21 @@ class ServerThread extends Thread
                         if(isCorrectUsername(username))
                         {
                             serverSentence = "REGISTERED TOSEND " + username +"\n\n";
-                            // Username and sockets stored in a Hashmap
-                            // {username, rec_socket}
                             Socket[] sockets = new Socket[2];
                             sockets[0] = socket;
-                            String key_len = inFromClient.readLine();
-                            int key_length =  Integer.parseInt(key_len);
-                            System.out.println(key_length);
-                            char[]temp1=new char[key_length];                            
-                            inFromClient.read(temp1, 0, key_length);
-                            System.out.println(temp1);                  
-                            String public_key = String.valueOf(temp1); 
-                            public_key = public_key.trim();                           
-                            System.out.println(public_key);
-                            if(public_key.length()!=128)
-                            {
-                                outToClient.writeBytes("Error 100");
-                            }     
-                            else
-                            {                       
-                                Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
-                                user_info.put(username, p);    
-                                outToClient.writeBytes(serverSentence);
-                            }                      
+                            int key_length =  Integer.parseInt(inFromClient.readLine());                           
+                            String public_key = "";
+                            int value = 0;
+         
+                            while(key_length!=0) {
+                                value = inFromClient.read();
+                                char c = (char)value;
+                                public_key+=c;
+                                key_length-=1;
+                            }                   
+                            Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
+                            user_info.put(username, p);
+                            outToClient.writeBytes(serverSentence);                     
                         }
                         else
                         {
@@ -115,11 +106,9 @@ class ServerThread extends Thread
                         String username = split_clientSentence[2];
                         if(isCorrectUsername(username))
                         {
-                            serverSentence = "REGISTERED TORECV " + username +"\n\n";
-                            //System.out.println(user_info.get(username));
+                            serverSentence = "REGISTERED TORECV " + username +"\n\n";                            
                             Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
-                            //System.out.print(socket);
                             outToClient.writeBytes(serverSentence);
                             this.stop();
                                             
@@ -158,7 +147,6 @@ class ServerThread extends Thread
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                         outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
-                        System.out.println("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
                         BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                         rec_sentence = inFromRecp.readLine();
                         inFromRecp.readLine();
@@ -176,12 +164,10 @@ class ServerThread extends Thread
                     inFromClient.readLine();
                     String user_of_key = split_clientSentence[1];                    
                     String key_of_user = user_info.get(user_of_key).getKey();
-                    //System.out.println(key_of_user);
                     outToClient.writeBytes("KEYIS\n"+ key_of_user.length() +"\n"+key_of_user);
                 }
                 else
                 {
-                    System.out.println(split_clientSentence[0]);
                     System.out.println("Unable to send");
                 }
             }
@@ -192,6 +178,7 @@ class ServerThread extends Thread
             System.out.println(e);
             user_info.remove(my_name);
             System.out.println("DEREGISTERED " + my_name);
+            this.stop();
         }
 
     }
