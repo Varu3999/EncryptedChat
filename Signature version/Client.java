@@ -1,17 +1,23 @@
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.Base64;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.SecureRandom;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
+
+import java.security.MessageDigest;
+
 import java.io.*;
 import java.net.*;
+
 class Client {
     
     private static final String ALGORITHM = "RSA";
@@ -84,7 +90,11 @@ class Client {
             }
             byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
             message = Base64.getEncoder().encodeToString(encrytpMsg);
-            outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message);
+            encrytpMsg = encryptpriv(privateKey, message.getBytes());
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] shaBytes = md.digest(encrytpMsg);
+            String encodedHash = Base64.getEncoder().encodeToString(shaBytes);
+            outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message + "\n" + encodedHash + "\n\n");
             // outToServer.writeBytes("SEND " + to);
             response = inFromServer.readLine();
             String[] splitRes = response.split(" ");
@@ -168,6 +178,19 @@ class Client {
         return encryptedBytes;
     }
 
+    public byte[] encryptpriv(byte[] privateKey, byte[] inputData)
+            throws Exception {
+            PrivateKey key = KeyFactory.getInstance(ALGORITHM)
+                .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
+
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+
+        byte[] encryptedBytes = cipher.doFinal(inputData);
+
+        return encryptedBytes;
+    }
+
     public byte[] decrypt(byte[] privateKey, byte[] inputData)
             throws Exception {
 
@@ -204,10 +227,14 @@ class Receiver extends Thread{
                     String finalMsg = "";
                     String sender = "";
                     String response = inFromServer.readLine();
-                    
                     String[] splitRes = response.split(" ");
                     finalMsg += splitRes[1];
                     sender = splitRes[1];
+                    response = inFromServer.readLine();
+                    String hashMsg = response;
+                    response = inFromServer.readLine();
+                    String publicKeySender = response;
+                    Bytes[] senderMsg = decryptpub(Base64.getDecoder.decode(publicKeySender),Base64.getDecoder.decode(hashMsg));
                     response = inFromServer.readLine();
                     splitRes = response.split(": ");
                     int contentLength = Integer.parseInt(splitRes[1]);
@@ -224,9 +251,15 @@ class Receiver extends Thread{
                     byte[] msg;
                     msg = Base64.getDecoder().decode(response);
                     msg = decrypt(privateKey, msg);
-                    response = new String(msg);
-                   
-                    finalMsg += ": " + response;
+                    String msgRec = new String(msg);
+                    Bytes[] msgRecB = Base64.getDecoder().decode(msgRec);
+                    if(Arrays.equals(msgRecB, senderMsg)){
+                        System.out.println("good");
+                    }
+                    else{
+                        System.out.println("bad");
+                    }
+                    finalMsg += ": " + msgRec;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
@@ -247,6 +280,20 @@ class Receiver extends Thread{
 
         PrivateKey key = KeyFactory.getInstance(ALGORITHM)
                 .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
+
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+
+        byte[] decryptedBytes = cipher.doFinal(inputData);
+
+        return decryptedBytes;
+    }
+    
+    public byte[] decryptpub(byte[] publicKey, byte[] inputData)
+            throws Exception {
+
+            PublicKey key = KeyFactory.getInstance(ALGORITHM)
+                .generatePublic(new X509EncodedKeySpec(publicKey));
 
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, key);
