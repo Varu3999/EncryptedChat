@@ -77,7 +77,7 @@ class Client {
         }
         try{
             response = inFromServer.readLine();
-            System.out.println(response);
+            //System.out.println(response);
             int keyLen = Integer.parseInt(response);
             int value = 0;
             response = "";
@@ -88,13 +88,16 @@ class Client {
                 response+=c;
                 keyLen-=1;
             }
-            byte[] encrytpMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
-            message = Base64.getEncoder().encodeToString(encrytpMsg);
-            encrytpMsg = encryptpriv(privateKey, message.getBytes());
+            byte[] encryptMsg = encrypt(Base64.getDecoder().decode(response), message.getBytes());
+            String messagee = Base64.getEncoder().encodeToString(encryptMsg);
+            
+            
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] shaBytes = md.digest(encrytpMsg);
-            String encodedHash = Base64.getEncoder().encodeToString(shaBytes);
-            outToServer.writeBytes("SEND " + to + "\nContent-length: " + message.length() + "\n\n" + message + "\n" + encodedHash + "\n\n");
+            byte[] shaBytes = md.digest(encryptMsg);
+            encryptMsg = encryptpriv(privateKey, shaBytes);
+            String encodedHash = Base64.getEncoder().encodeToString(encryptMsg);
+            //System.out.println(encodedHash);
+            outToServer.writeBytes("SEND " + to + "\nContent-length: " + messagee.length() + "\n\n" + messagee + "\n" + encodedHash + "\n\n");
             // outToServer.writeBytes("SEND " + to);
             response = inFromServer.readLine();
             String[] splitRes = response.split(" ");
@@ -234,7 +237,9 @@ class Receiver extends Thread{
                     String hashMsg = response;
                     response = inFromServer.readLine();
                     String publicKeySender = response;
-                    Bytes[] senderMsg = decryptpub(Base64.getDecoder.decode(publicKeySender),Base64.getDecoder.decode(hashMsg));
+                    //System.out.println(hashMsg);
+                    byte[] senderMsg = decryptpub(Base64.getDecoder().decode(publicKeySender),Base64.getDecoder().decode(hashMsg));
+                   
                     response = inFromServer.readLine();
                     splitRes = response.split(": ");
                     int contentLength = Integer.parseInt(splitRes[1]);
@@ -250,9 +255,11 @@ class Receiver extends Thread{
                     }
                     byte[] msg;
                     msg = Base64.getDecoder().decode(response);
+                    MessageDigest md = MessageDigest.getInstance("SHA-256");
+                    byte[] msgRecB = md.digest(msg);
                     msg = decrypt(privateKey, msg);
                     String msgRec = new String(msg);
-                    Bytes[] msgRecB = Base64.getDecoder().decode(msgRec);
+                    // byte[] msgRecB = Base64.getDecoder().decode(msgRec);
                     if(Arrays.equals(msgRecB, senderMsg)){
                         System.out.println("good");
                     }
@@ -263,7 +270,8 @@ class Receiver extends Thread{
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
-                    System.out.println(e.getStackTrace());
+                    System.out.println(e);
+                    
                     System.out.println("Server Is Down");
                     System.exit(0);
                     break;
