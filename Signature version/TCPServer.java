@@ -25,7 +25,6 @@ class TCPServer
         TCPServer wa_server = new TCPServer(1234);
         while(true)
         {   
-
             Socket conn_socket = wa_server.welcomeSocket.accept();
             ServerThread st= new ServerThread(conn_socket, wa_server);
             st.start();
@@ -47,8 +46,7 @@ class ServerThread extends Thread
     }
 
     public void run()
-    {
-        
+    {        
         try
         {
             while(true)
@@ -62,16 +60,14 @@ class ServerThread extends Thread
                 String[] split_clientSentence = clientSentence.split(" ");
 
                 if(split_clientSentence[0].equals("REGISTER"))
-                {
-                    
+                {                    
                     if(split_clientSentence.length>5)
                     {
                         serverSentence = "ERROR 100 Malformed username\n";
                         outToClient.writeBytes(serverSentence);
                     }
                     if(split_clientSentence[1].equals("TOSEND"))
-                    {
-                        
+                    {                        
                         String username = split_clientSentence[2];
                         my_name = username;
                         if(isCorrectUsername(username))
@@ -100,8 +96,7 @@ class ServerThread extends Thread
                         }
                     }
                     else if(split_clientSentence[1].equals("TORECV"))
-                    {
-                        
+                    {                        
                         inFromClient.readLine();
                         String username = split_clientSentence[2];
                         if(isCorrectUsername(username))
@@ -110,18 +105,14 @@ class ServerThread extends Thread
                             Socket[] sockets1 = user_info.get(username).getValue();                            
                             sockets1[1] = socket;  
                             outToClient.writeBytes(serverSentence);
-                            this.stop();
-                                            
+                            this.stop();                                            
                         }
                         else
                         {
                             serverSentence = "ERROR 100 Malformed username\n";
                             outToClient.writeBytes(serverSentence);
-                        }
-                            
-                        
-                    }                 
-                                     
+                        }                        
+                    }                               
                 }
                 else if(split_clientSentence[0].equals("SEND"))
                 {
@@ -137,16 +128,21 @@ class ServerThread extends Thread
 
                     // Reads the message from the client
                     inFromClient.readLine();
-                    char[]temp=new char[content_length];
-                    inFromClient.read(temp, 0, content_length);
-                    String sending_message = String.valueOf(temp);
+                    String sending_message = inFromClient.readLine();
+                    String sign_hash = inFromClient.readLine();
+                    inFromClient.readLine();
                     try{
                         // Finds the username from the map formed
                         Socket[] sockets11 = user_info.get(user_to_send).getValue();
                         Socket rec_socket_rec = sockets11[1];
                         String rec_sentence;                        
                         DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
+                        outToRecp.writeBytes("FORWARD " + my_name + "\n" 
+                                            + sign_hash + "\n" 
+                                            + user_info.get(my_name).getKey() + "\n"
+                                            + "Content-length: " + content_length + "\n\n"
+                                            + sending_message);
+
                         BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                         rec_sentence = inFromRecp.readLine();
                         inFromRecp.readLine();
@@ -164,14 +160,15 @@ class ServerThread extends Thread
                     inFromClient.readLine();
                     String user_of_key = split_clientSentence[1];                    
                     String key_of_user = user_info.get(user_of_key).getKey();
-                    outToClient.writeBytes("KEYIS\n"+ key_of_user.length() +"\n"+key_of_user);
+                    outToClient.writeBytes("KEYIS\n"
+                                           + key_of_user.length() 
+                                           + "\n"+key_of_user);
                 }
                 else
                 {
                     System.out.println("Unable to send");
                 }
             }
-            
         }
         catch(Exception e)
         {
@@ -180,7 +177,6 @@ class ServerThread extends Thread
             System.out.println("DEREGISTERED " + my_name);
             this.stop();
         }
-
     }
 
     public Boolean isCorrectUsername(String username)
