@@ -24,17 +24,17 @@ class Client {
     {
         try{
             String hostIP;
-            String port = 1234
+            String port = "1234";
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("Server IP: ");
             hostIP = inFromUser.readLine();
-            System.out.println("write correct IP");
-            Socket clientSocket = new Socket(hostIP, port);
+            //System.out.println("write correct IP");
+            Socket clientSocket = new Socket(hostIP, Integer.parseInt(port));
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             outToServer.writeBytes("GETMODE\n\n");
-            String response inFromServer.readline();
-            clientSocket.close();
+            String response = inFromServer.readLine();
+            //clientSocket.close();
             String splitRes[] = response.split(" ");
             if(splitRes[0] == "MODEIS"){
                 String input = splitRes[1];

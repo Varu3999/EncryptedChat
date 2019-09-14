@@ -103,7 +103,8 @@ class ServerThread extends Thread
                             String public_key = "";
                             int value = 0;
          
-                            while(key_length!=0) {
+                            while(key_length!=0) 
+                            {
                                 value = inFromClient.read();
                                 char c = (char)value;
                                 public_key+=c;
@@ -149,6 +150,11 @@ class ServerThread extends Thread
                         }                        
                     }                               
                 }
+                else if(split_clientSentence[0].equals("GETMODE"))
+                {
+                    inFromClient.readLine();
+                    outToClient.writeBytes("MODEIS "+mode+"\n\n");
+                }
                 else if(split_clientSentence[0].equals("SEND"))
                 {
                     // Reads the username from the message
@@ -182,8 +188,7 @@ class ServerThread extends Thread
                                                 + sign_hash + "\n" 
                                                 + user_info.get(my_name).getKey() + "\n"
                                                 + "Content-length: " + content_length + "\n\n"
-                                                + sending_message);
-                                               
+                                                + sending_message);                                               
                             }
                             else if(mode.equals("2"))
                             {                                
@@ -214,7 +219,6 @@ class ServerThread extends Thread
                                 }
                                 outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
                             }
-
                             BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                             rec_sentence = inFromRecp.readLine();
                             inFromRecp.readLine();
