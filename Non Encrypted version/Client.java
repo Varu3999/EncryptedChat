@@ -23,7 +23,11 @@ class Client {
             while(true){    
                 String msg = inFromUser.readLine();
                 if(msg.charAt(0) == '@'){
-                    try{
+                    
+                        if(!msg.contains(" ")){
+                            System.out.println("WRONG FORMAT!!");
+                            continue;
+                        }
                         String[] msgSplit = msg.split(" ",2);
                         if(msgSplit[1].length() > 0 && msgSplit[0].length() > 0){
                             message = msgSplit[1];
@@ -33,9 +37,7 @@ class Client {
                         }else{
                             System.out.println("WRONG FORMAT!!");
                         }
-                    }catch(Exception e){
-                        System.out.println("WRONG FORMAT!!");
-                    }
+                    
                 }else{
                     System.out.println("WRONG FORMAT!!");
                 }

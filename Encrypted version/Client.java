@@ -40,16 +40,21 @@ class Client {
             while(true){    
                 String msg = inFromUser.readLine();
                 if(msg.charAt(0) == '@'){
-                    String[] msgSplit = msg.split(" ",2);
-                    if(msgSplit[1].length() > 0 && msgSplit[0].length() > 0){
-                        message = msgSplit[1];
-                        msgSplit = msgSplit[0].split("@",2);
-                        to = msgSplit[1];
-                        ob.sendMessage(to , message);
-                    }else{
-                        System.out.println("WRONG FORMAT!!");
-                    }
-
+                    
+                        if(!msg.contains(" ")){
+                            System.out.println("WRONG FORMAT!!");
+                            continue;
+                        }
+                        String[] msgSplit = msg.split(" ",2);
+                        if(msgSplit[1].length() > 0 && msgSplit[0].length() > 0){
+                            message = msgSplit[1];
+                            msgSplit = msgSplit[0].split("@",2);
+                            to = msgSplit[1];
+                            ob.sendMessage(to , message);
+                        }else{
+                            System.out.println("WRONG FORMAT!!");
+                        }
+                    
                 }else{
                     System.out.println("WRONG FORMAT!!");
                 }
@@ -83,7 +88,7 @@ class Client {
         outToServer.writeBytes("FETCHKEY " + to + "\n\n");
         String response = inFromServer.readLine();
         if(!response.equals("KEYIS")){
-            System.out.println("User doesn't Exists!!!");
+            System.out.println("User doesn't Exist!!!");
             return;
         }
         try{
