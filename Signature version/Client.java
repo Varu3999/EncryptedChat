@@ -145,6 +145,7 @@ class Client {
         outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n"+ publicKeyB);
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
+        inFromServer.readLine();
         if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
             System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
             registerToSend();
@@ -159,6 +160,7 @@ class Client {
         outToServer.writeBytes("REGISTER TORECV " + userName + "\n\n");
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
+        inFromServer.readLine();
         if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TORECV") && splitRes[2].equals(userName))){
             clientSocketRec.close();
             registerToReceive();
@@ -242,6 +244,7 @@ class Receiver extends Thread{
                     String finalMsg = "";
                     String sender = "";
                     String response = inFromServer.readLine();
+                    System.out.println(response);
                     String[] splitRes = response.split(" ");
                     finalMsg += splitRes[1];
                     sender = splitRes[1];
