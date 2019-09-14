@@ -131,38 +131,54 @@ class ServerThread extends Thread
                     String sending_message = inFromClient.readLine();
                     String sign_hash = inFromClient.readLine();
                     inFromClient.readLine();
-                    try{
-                        // Finds the username from the map formed
-                        Socket[] sockets11 = user_info.get(user_to_send).getValue();
-                        Socket rec_socket_rec = sockets11[1];
-                        String rec_sentence;                        
-                        DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes("FORWARD " + my_name + "\n" 
-                                            + sign_hash + "\n" 
-                                            + user_info.get(my_name).getKey() + "\n"
-                                            + "Content-length: " + content_length + "\n\n"
-                                            + sending_message);
-
-                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
-                        rec_sentence = inFromRecp.readLine();
-                        inFromRecp.readLine();
-                        if(rec_sentence.equals("RECEIVED " + my_name))
+                    try
+                    {
+                        // Finds the username from the map formed                        
+                        if(user_info.get(user_to_send)!=null)
                         {
-                            outToClient.writeBytes("SENT " + user_to_send + "\n\n");
-                        }                                  
-                        
-                    }catch(Exception e){
+                            Socket[] sockets11 = user_info.get(user_to_send).getValue();
+                            Socket rec_socket_rec = sockets11[1];
+                            String rec_sentence;                        
+                            DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
+                            outToRecp.writeBytes("FORWARD " + my_name + "\n" 
+                                                + sign_hash + "\n" 
+                                                + user_info.get(my_name).getKey() + "\n"
+                                                + "Content-length: " + content_length + "\n\n"
+                                                + sending_message);
+
+                            BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
+                            rec_sentence = inFromRecp.readLine();
+                            inFromRecp.readLine();
+                            if(rec_sentence.equals("RECEIVED " + my_name))
+                            {
+                                outToClient.writeBytes("SENT " + user_to_send + "\n\n");
+                            }  
+                        }
+                        else
+                        {
+                            outToClient.writeBytes("User not found!");
+                        }                               
+                    }
+                    catch(Exception e)
+                    {
                         outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
                     }
                 }
                 else if(split_clientSentence[0].equals("FETCHKEY"))
                 {
                     inFromClient.readLine();
-                    String user_of_key = split_clientSentence[1];                    
-                    String key_of_user = user_info.get(user_of_key).getKey();
-                    outToClient.writeBytes("KEYIS\n"
-                                           + key_of_user.length() 
-                                           + "\n"+key_of_user);
+                    String user_of_key = split_clientSentence[1];
+                    if(user_info.get(user_of_key)!=null)
+                    {
+                        String key_of_user = user_info.get(user_of_key).getKey();
+                        outToClient.writeBytes("KEYIS\n"
+                                            + key_of_user.length() 
+                                            + "\n"+key_of_user);
+                    } 
+                    else
+                    {
+                        outToClient.writeBytes("User not found!");
+                    }                    
                 }
                 else
                 {
