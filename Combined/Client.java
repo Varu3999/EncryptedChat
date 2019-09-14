@@ -23,33 +23,41 @@ class Client {
     public static void main(String argv[]) 
     {
         try{
-            System.out.println("Please Enter a mode:");
-            System.out.println("1: Non Encrypted");
-            System.out.println("2: Encrypted");
-            System.out.println("3: Signature");
-            System.out.println("Mode:");
+            String hostIP;
+            String port = 1234
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            String input = inFromUser.readLine();
-            if(input.equals("1")){
-                Client_Non_Encrypted cl = new Client_Non_Encrypted();
-                String a[] = new String[1];
-                cl.main(a);
-            }else if(input.equals("2")){
-                Client_Encrypted cl = new Client_Encrypted();;
-                String a[] = new String[1];
-                cl.main(a);
-            }else if(input.equals("3")){
-                Client_Signature cl = new Client_Signature();
-                String a[] = new String[1];
-                cl.main(a);
-            }else{
-                System.out.println("Please Enter a valid mode");
-                String a[] = new String[1];
-                main(a);
+            System.out.print("Server IP: ");
+            hostIP = inFromUser.readLine();
+            System.out.println("write correct IP");
+            Socket clientSocket = new Socket(hostIP, port);
+            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            outToServer.writeBytes("GETMODE\n\n");
+            String response inFromServer.readline();
+            clientSocket.close();
+            String splitRes[] = response.split(" ");
+            if(splitRes[0] == "MODEIS"){
+                String input = splitRes[1];
+                if(input.equals("1")){
+                    Client_Non_Encrypted cl = new Client_Non_Encrypted();
+                    String a[] = new String[1];
+                    cl.main(a);
+                }else if(input.equals("2")){
+                    Client_Encrypted cl = new Client_Encrypted();;
+                    String a[] = new String[1];
+                    cl.main(a);
+                }else if(input.equals("3")){
+                    Client_Signature cl = new Client_Signature();
+                    String a[] = new String[1];
+                    cl.main(a);
+                }else{
+                    System.out.println("Wrong Response from server please try again");
+                    String a[] = new String[1];
+                    main(a);
+                }
             }
-        }
-        catch(Exception e){
-            System.out.println("Please Enter a valid mode");
+        }catch(Exception e){
+            System.out.println("Wrong Response from server please try again");
             String a[] = new String[1];
             main(a);
         }
@@ -287,7 +295,6 @@ class Receiver_Signature extends Thread{
                     String finalMsg = "";
                     String sender = "";
                     String response = inFromServer.readLine();
-                    System.out.println(response);
                     String[] splitRes = response.split(" ");
                     finalMsg += splitRes[1];
                     sender = splitRes[1];
