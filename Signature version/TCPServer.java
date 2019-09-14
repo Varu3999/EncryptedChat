@@ -156,7 +156,8 @@ class ServerThread extends Thread
                         }
                         else
                         {
-                            outToClient.writeBytes("User not found!");
+                            outToClient.writeBytes("USER NOT FOUND\n\n");
+                            System.out.println("USER NOT FOUND\n\n");
                         }                               
                     }
                     catch(Exception e)
@@ -177,12 +178,12 @@ class ServerThread extends Thread
                     } 
                     else
                     {
-                        outToClient.writeBytes("User not found!");
+                        outToClient.writeBytes("USER NOT FOUND\n\n");
                     }                    
                 }
                 else
                 {
-                    System.out.println("Unable to send");
+                    outToClient.writeBytes("USER NOT FOUND\n\n");
                 }
             }
         }
