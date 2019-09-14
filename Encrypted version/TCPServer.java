@@ -153,18 +153,18 @@ class ServerThread extends Thread
                                                  + "Content-length: " 
                                                  + content_length + "\n\n" 
                                                  + sending_message);
-                                                 
+
                             BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
                             rec_sentence = inFromRecp.readLine();
                             inFromRecp.readLine();
                             if(rec_sentence.equals("RECEIVED " + my_name))
                             {
                                 outToClient.writeBytes("SENT " + user_to_send + "\n\n");
-                            }  
+                            }
                         }
                         else
                         {
-                            outToClient.writeBytes("User not found!");
+                            outToClient.writeBytes("USER NOT FOUND\n\n");
                         }                                
                         
                     }
@@ -186,12 +186,12 @@ class ServerThread extends Thread
                     } 
                     else
                     {
-                        outToClient.writeBytes("User not found!");
+                        outToClient.writeBytes("USER NOT FOUND\n\n");
                     }
                 }
                 else
                 {
-                    System.out.println("Unable to send");
+                    System.out.println("USER NOT FOUND\n\n");
                 }
             }
             

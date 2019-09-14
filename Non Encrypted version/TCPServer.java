@@ -145,7 +145,7 @@ class ServerThread extends Thread
                         }
                         else
                         {
-                            outToClient.writeBytes("User not found!");
+                            outToClient.writeBytes("USER NOT FOUND\n\n");
                         } 
                     }
                     catch(Exception e)
