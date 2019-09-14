@@ -128,21 +128,28 @@ class ServerThread extends Thread
                     String sending_message = String.valueOf(temp);
                     try{
                         // Finds the username from the map formed
-                        Socket[] sockets11 = user_info.get(user_to_send);
-            
-                    
-                        Socket rec_socket_rec = sockets11[1];
-                        String rec_sentence;                        
-                        DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
-                        outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
-                        BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
-                        rec_sentence = inFromRecp.readLine();
-                        inFromRecp.readLine();
-                        if(rec_sentence.equals("RECEIVED " + my_name))
+                        if(user_info.get(user_to_send)!=null)
                         {
-                            outToClient.writeBytes("SENT " + user_to_send + "\n\n");
-                        }   
-                    }catch(Exception e){
+                            Socket[] sockets11 = user_info.get(user_to_send);      
+                            Socket rec_socket_rec = sockets11[1];
+                            String rec_sentence;                        
+                            DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
+                            outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
+                            BufferedReader inFromRecp = new BufferedReader(new InputStreamReader(sockets11[1].getInputStream()));                          
+                            rec_sentence = inFromRecp.readLine();
+                            inFromRecp.readLine();
+                            if(rec_sentence.equals("RECEIVED " + my_name))
+                            {
+                                outToClient.writeBytes("SENT " + user_to_send + "\n\n");
+                            }  
+                        }
+                        else
+                        {
+                            outToClient.writeBytes("User not found!");
+                        } 
+                    }
+                    catch(Exception e)
+                    {
                         outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
                     }   
                 }
