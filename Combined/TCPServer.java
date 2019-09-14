@@ -39,7 +39,8 @@ class TCPServer
             System.out.print("Please select a mode from the following 3 modes:\n" +
                              "1. Non-Encrypted\n" +
                              "2. Encrypted\n" +
-                             "3. Encrypted with Sgnature\n");
+                             "3. Encrypted with Signature\n" +
+                             "Mode:\n");
             run_mode = inFromUser.readLine();
             if(!run_mode.equals("1") && !run_mode.equals("2") && !run_mode.equals("3"))
             {
@@ -162,9 +163,7 @@ class ServerThread extends Thread
 
                     // Reads the message from the client
                     inFromClient.readLine();
-                    String sending_message = inFromClient.readLine();
-                    String sign_hash = inFromClient.readLine();
-                    inFromClient.readLine();
+                                        
                     try
                     {
                         // Finds the username from the map formed                        
@@ -176,21 +175,43 @@ class ServerThread extends Thread
                             DataOutputStream outToRecp = new DataOutputStream(rec_socket_rec.getOutputStream());
                             if(mode.equals("3"))
                             {
+                                String sending_message = inFromClient.readLine();
+                                String sign_hash = inFromClient.readLine();
+                                inFromClient.readLine();
                                 outToRecp.writeBytes("FORWARD " + my_name + "\n" 
                                                 + sign_hash + "\n" 
                                                 + user_info.get(my_name).getKey() + "\n"
                                                 + "Content-length: " + content_length + "\n\n"
                                                 + sending_message);
+                                               
                             }
                             else if(mode.equals("2"))
-                            {
+                            {                                
+                                String sending_message = "";
+                                int value = 0;      
+                                int buff_len = content_length;      
+                                while(buff_len!=0) {
+                                    value = inFromClient.read();
+                                    char c = (char)value;
+                                    sending_message+=c;
+                                    buff_len-=1;
+                                }
                                 outToRecp.writeBytes("FORWARD " + my_name + "\n"
                                                  + "Content-length: " 
                                                  + content_length + "\n\n" 
-                                                 + sending_message);
+                                                 + sending_message);                                                 
                             }
                             else
                             {
+                                String sending_message = "";
+                                int value = 0;      
+                                int buff_len = content_length;      
+                                while(buff_len!=0) {
+                                    value = inFromClient.read();
+                                    char c = (char)value;
+                                    sending_message+=c;
+                                    buff_len-=1;
+                                }
                                 outToRecp.writeBytes("FORWARD " + my_name + "\n" + "Content-length: " + content_length + "\n\n" + sending_message);
                             }
 
