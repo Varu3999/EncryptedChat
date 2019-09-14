@@ -23,7 +23,7 @@ class Client {
     private static final String ALGORITHM = "RSA";
     public static int port = 1234;
     public String userName = "";
-    public static String hostIP = "localhost";
+    public static String hostIP = "";
     public Socket clientSocketSen;
     public Socket clientSocketRec;
     public byte[] publicKey;
@@ -33,6 +33,7 @@ class Client {
     {
         try{
             Client ob = new Client();
+            ob.getIP();
             ob.generateKeyPair();
             ob.registerToSend();
             ob.registerToReceive();
@@ -61,6 +62,21 @@ class Client {
             }
         }catch(Exception e){
             System.out.println("Server is DOWN!!!!!!!");
+            System.out.println("Try another Server IP!!");
+            String a[] = new String[1];        
+            main(a);
+        }
+        
+    }
+
+    public void getIP(){
+        try{
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Server IP: ");
+            hostIP = inFromUser.readLine();
+        }catch(Exception e){
+            System.out.println("write correct IP");
+            getIP();
         }
         
     }
@@ -116,27 +132,23 @@ class Client {
         
     }
 
-    private void registerToSend()
+    private void registerToSend() throws Exception
     {
-        try{
-            System.out.println("User Name:");
-            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            clientSocketSen = new Socket(hostIP, port);
-            
-            DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
-            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
-            userName = inFromUser.readLine();                       
-            String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
-            outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n"+ publicKeyB);
-            String response = inFromServer.readLine();
-            String[] splitRes = response.split(" ");
-            if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
-                System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
-                registerToSend();
-            }
-        }catch(Exception e){
-            System.out.println("hihohiihi" + e);
-        }
+        
+        clientSocketSen = new Socket(hostIP, port);
+        System.out.print("User Name: ");
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+        DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
+        userName = inFromUser.readLine();                       
+        String publicKeyB = Base64.getEncoder().encodeToString(publicKey);
+        outToServer.writeBytes("REGISTER TOSEND " + userName + "\n" + publicKeyB.length() + "\n"+ publicKeyB);
+        String response = inFromServer.readLine();
+        String[] splitRes = response.split(" ");
+        if(!(splitRes[0].equals("REGISTERED") && splitRes[1].equals("TOSEND") && splitRes[2].equals(userName))){
+            System.out.println("NOT A VALID USER NAME OR USERNAME ALREADY REGISTERED!!!");
+            registerToSend();
+        }   
     }
 
     private void registerToReceive() throws Exception
@@ -261,14 +273,15 @@ class Receiver extends Thread{
                     String msgRec = new String(msg);
                     // byte[] msgRecB = Base64.getDecoder().decode(msgRec);
                     if(Arrays.equals(msgRecB, senderMsg)){
-                        System.out.println("good");
+                        finalMsg += ": " + msgRec;
+                        System.out.println(finalMsg);
                     }
                     else{
-                        System.out.println("bad");
+                        System.out.println("User not authenticated!!!!!");
                     }
-                    finalMsg += ": " + msgRec;
+                    
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
-                    System.out.println(finalMsg);
+                    
                 }catch(Exception e){
                     System.out.println(e);
                     

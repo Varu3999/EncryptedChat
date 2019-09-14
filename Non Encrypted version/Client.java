@@ -11,6 +11,7 @@ class Client {
     {
         try{
             Client ob = new Client();
+            ob.getIP();
             ob.registerToSend();
             ob.registerToReceive();
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
@@ -41,6 +42,21 @@ class Client {
             }
         }catch(Exception e){
             System.out.println("Server is DOWN!!!!!!!");
+            System.out.println("Try another Server IP!!");
+            String a[] = new String[1];        
+            main(a);
+        }
+        
+    }
+
+    public void getIP(){
+        try{
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Server IP: ");
+            hostIP = inFromUser.readLine();
+        }catch(Exception e){
+            System.out.println("write correct IP");
+            getIP();
         }
         
     }
@@ -67,10 +83,10 @@ class Client {
     private void registerToSend() throws Exception
     {
 
-        System.out.println("User Name:");
+        
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
         clientSocketSen = new Socket(hostIP, port);
-        
+        System.out.println("User Name:");
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         userName = inFromUser.readLine();
