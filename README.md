@@ -12,7 +12,7 @@ This is a Chat Engine built on Java using the Socket Library. It contains a Serv
 ### Modes of Operations
 - **Non Encrypted** : This is the basic mode of operation in which the chating betwen the clients is not encrypted and anyone who has the access to the server can read the messages between the 2 clients. This isn't a secure way of communication as the message can be seen if packet sniffing tools are used.
 - **Encrypted** : This is a more secure mode of communication as in this mode the chating between the clients is encrypted so even if someone tries to sniff the packets or has the control over the server, he/she won't be able to see the messages. This encryption is done by generation a private key and public key pair of all clients and giving the public key to the server. Whenever a Client A wants to send a message to Client B the he will encrypt the message using public key of B and then only Client B can read the message as it has the private key to decrypt it. But there is one problem with this approach. If the Client A send the messge to Client B but by changing the header of the packet such that the Sender becomes Client C then Client A won't be able to detect this.
-- **Encrypted with Signature Check** : This is the most secure way of communication as in the mode while sending the message the Client A also has send a Signature by hashing the encrypted message and encrypt it again using his own private key and send both Signature and the encrypted messages so that when Client B receives the message it will first check whether the message is really from Client A by checking if the Signature matches trhe message.
+- **Encrypted with Signature Check** : This is the most secure way of communication as in the mode while sending the message the Client A also has send a Signature by hashing the encrypted message and encrypt it again using his own private key and send both Signature and the encrypted messages so that when Client B receives the message it will first check whether the message is really from Client A by checking if the Signature matches the message.
  
  
 # How to Use
@@ -32,8 +32,8 @@ $ javac TCPServer.java
 $ java TCPServer
 ```
 
-When the server start then chose the mode in which you want to run it in
-After choosing the mode the server is running on your localhost:1234
+When the server starts, select the mode from the 3 specified modes and press Enter.
+The server would start running on your localhost:1234
 
 **Start a Client**
 
