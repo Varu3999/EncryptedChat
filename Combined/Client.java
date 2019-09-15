@@ -166,7 +166,6 @@ class Client_Signature {
             outToServer.writeBytes("SEND " + to + "\nContent-length: " + messagee.length() + "\n\n" + messagee + "\n" + encodedHash + "\n\n");
             // outToServer.writeBytes("SEND " + to);
             response = inFromServer.readLine();
-            System.out.println(response);
             String[] splitRes = response.split(" ");
             if(!splitRes[0].equals("SENT")){
                 if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
@@ -597,7 +596,7 @@ class Receiver_Encrypted extends Thread{
                     byte[] msg;
                     msg = Base64.getDecoder().decode(response);
                     msg = decrypt(privateKey, msg);
-                    response = new String(msg);         
+                    response = new String(msg);
                    
                     finalMsg += ": " + response;
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
@@ -690,7 +689,6 @@ class Client_Non_Encrypted {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         String response = inFromServer.readLine();
         String[] splitRes = response.split(" ");
-        System.out.println(response);
         if(!splitRes[0].equals("SENT")){
             if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
                 System.out.println("Unable To Send ....");
@@ -771,7 +769,6 @@ class Receiver_Non_Encrypted extends Thread{
                     inFromServer.read(message , 0 , contentLength);
                     response = String.valueOf(message);
                     finalMsg += ": " + response;
-                    //inFromServer.readLine();
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     System.out.println(finalMsg);
                 }catch(Exception e){
