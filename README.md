@@ -4,15 +4,15 @@ This is a Chat Engine built on Java using the Socket Library. It contains a Serv
 
 # Features
 
-  - Multiple Clients can be connected to the Server and Chat at the same time.
+  - Multiple Clients can be connected to the Server and can Chat at the same time.
   - Once connected to the Server the Client doesn't need to reconnect to send or receive new messages
-  - The Server can run in 3 mode Non-Encrypted Mode / Encrypted Mode / Encrypted Mode with Signature Check
+  - The Server can run in 3 modes : Non-Encrypted Mode / Encrypted Mode / Encrypted Mode with Signature Check
   - You can set the mode of the server while setting it up and all the clients will connect to it in the same mode automatically
  
 ### Modes of Operations
-- **Non Encrypted** : This is the basic mode of operation in which the chating betwen the clients is not encrypted and anyone who has the access to the server can read the messages between the 2 clients. This isn't a secure way of communication as the message can be seen if packet sniffing tools are used.
-- **Encrypted** : This is a more secure mode of communication as in this mode the chating between the clients is encrypted so even if someone tries to sniff the packets or has the control over the server, he/she won't be able to see the messages. This encryption is done by generation a private key and public key pair of all clients and giving the public key to the server. Whenever a Client A wants to send a message to Client B the he will encrypt the message using public key of B and then only Client B can read the message as it has the private key to decrypt it. But there is one problem with this approach. If the Client A send the messge to Client B but by changing the header of the packet such that the Sender becomes Client C then Client A won't be able to detect this.
-- **Encrypted with Signature Check** : This is the most secure way of communication as in the mode while sending the message the Client A also has send a Signature by hashing the encrypted message and encrypt it again using his own private key and send both Signature and the encrypted messages so that when Client B receives the message it will first check whether the message is really from Client A by checking if the Signature matches the message.
+- **Non Encrypted** : This is the basic mode of operation in which communication between the clients is not encrypted and anyone who has access to the server can read the messages between any 2 clients. This isn't a secure way of communication as the message can be seen if packet sniffing tools are used.
+- **Encrypted** : This is a more secure mode of communication as in this mode the communication between the clients is encrypted so even if someone tries to sniff the packets or has the control over the server, he/she won't be able to see the messages. This encryption is done by generation a private key and public key pair for all client. The public key of each user is stored at the server. Whenever a Client A wants to send a message to Client B, Client A will encrypt the message using the public key of B. This makes sure that the data can only be decrypted by Client B using its private key. The problem with this approach is that if a Client C tries to send a message to Client B using Client A's id, Client B won't be able to detect it and would conclude that the message was sent by Client A.
+- **Encrypted with Signature Check** : This is the most secure way of communication as in this mode, while sending the message, Client A also sends a Signature by hashing the encrypted message and encrypting it again using its own private key. 'A' sends both Signature and the encrypted message so that when Client B receives the message, it can verify the user by decrypting the signature using A's public key.
  
  
 # How to Use
