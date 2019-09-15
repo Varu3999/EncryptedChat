@@ -46,5 +46,5 @@ Enter the ip of the server if you are running on the same machine simply put 'lo
 Now Select your Username and Start Chatting with your Friends 😄!!!
 
 # Contributors
-Varun Gupta
-Rushang Gupta
+- Varun Gupta
+- Rushang Gupta
