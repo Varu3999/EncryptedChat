@@ -113,6 +113,7 @@ class ServerThread extends Thread
                             }                   
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(public_key, sockets);
                             user_info.put(username, p);
+                            System.out.println(serverSentence);
                             outToClient.writeBytes(serverSentence);                     
                         }
                         else if(isCorrectUsername(username))
@@ -125,6 +126,7 @@ class ServerThread extends Thread
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(username, sockets);
                             user_info.put(username, p);
                             outToClient.writeBytes(serverSentence);
+                            System.out.println(serverSentence);
                             inFromClient.readLine();
                         }
                         else
@@ -147,7 +149,7 @@ class ServerThread extends Thread
                         }
                         else
                         {
-                            serverSentence = "ERROR 100 Malformed username\n";
+                            serverSentence = "ERROR 100 Malformed username\n\n";
                             outToClient.writeBytes(serverSentence);
                         }                        
                     }                               
@@ -238,7 +240,7 @@ class ServerThread extends Thread
                     catch(Exception e)
                     {
                         
-                        outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
+                        outToClient.writeBytes("ERROR 101 Unable to send\n");
                     }
                 }
                 else if(split_clientSentence[0].equals("FETCHKEY"))
