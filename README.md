@@ -1,4 +1,4 @@
-# Chat Application (Encrypted with Signature)
+# Chat Application (Encrypted with Signature) [![java:v8](https://img.shields.io/badge/Java-v8-brightgreen.svg)](https://www.java.com)
 
 This is a Chat Engine built on Java using the Socket Library. It contains a Server which acts as an interface between Client and helps in exchange of messages. This project is a part of Computer Networks course COL 334 taught by Prof. Aaditeshwar Seth.
 
