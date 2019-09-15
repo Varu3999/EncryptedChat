@@ -1,6 +1,6 @@
 # Chat Application (Encrypted with Signature)
 
-This is a Chat Engine built on Java using the Socket Library. It contains a Server which acts as an interface between Client and helps in exchange of messages. This project is a part of Computer Networks course COL 334 taught by Prof. Aditeshwar Seth.
+This is a Chat Engine built on Java using the Socket Library. It contains a Server which acts as an interface between Client and helps in exchange of messages. This project is a part of Computer Networks course COL 334 taught by Prof. Aaditeshwar Seth.
 
 # Features
 
