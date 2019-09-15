@@ -33,28 +33,38 @@ class Client {
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             outToServer.writeBytes("GETMODE\n\n");
+            
             String response = inFromServer.readLine();
+            
             //clientSocket.close();
             String splitRes[] = response.split(" ");
-            if(splitRes[0] == "MODEIS"){
+            if(splitRes[0].equals("MODEIS")){
                 String input = splitRes[1];
                 if(input.equals("1")){
                     Client_Non_Encrypted cl = new Client_Non_Encrypted();
                     String a[] = new String[1];
+                    a[0] = hostIP;
                     cl.main(a);
                 }else if(input.equals("2")){
                     Client_Encrypted cl = new Client_Encrypted();;
                     String a[] = new String[1];
+                    a[0] = hostIP;
                     cl.main(a);
                 }else if(input.equals("3")){
                     Client_Signature cl = new Client_Signature();
                     String a[] = new String[1];
+                    a[0] = hostIP;
                     cl.main(a);
                 }else{
                     System.out.println("Wrong Response from server please try again");
                     String a[] = new String[1];
+                    a[0] = hostIP;
                     main(a);
                 }
+            }else{
+                System.out.println("Wrong Response from server please try again");
+                String a[] = new String[1];
+                main(a);
             }
         }catch(Exception e){
             System.out.println("Wrong Response from server please try again");
@@ -79,7 +89,7 @@ class Client_Signature {
     {
         try{
             Client_Signature ob = new Client_Signature();
-            ob.getIP();
+            ob.hostIP = argv[0];
             ob.generateKeyPair();
             ob.registerToSend();
             ob.registerToReceive();
@@ -120,17 +130,6 @@ class Client_Signature {
         
     }
 
-    public void getIP(){
-        try{
-            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Server IP: ");
-            hostIP = inFromUser.readLine();
-        }catch(Exception e){
-            System.out.println("write correct IP");
-            getIP();
-        }
-        
-    }
 
     private void sendMessage(String to , String message) throws Exception
     {
@@ -394,7 +393,7 @@ class Client_Encrypted {
     {
         try{
             Client_Encrypted ob = new Client_Encrypted();
-            ob.getIP();
+            ob.hostIP = argv[0];
             ob.generateKeyPair();
             ob.registerToSend();
             ob.registerToReceive();
@@ -436,17 +435,7 @@ class Client_Encrypted {
     }
 
 
-    public void getIP(){
-        try{
-            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Server IP: ");
-            hostIP = inFromUser.readLine();
-        }catch(Exception e){
-            System.out.println("write correct IP");
-            getIP();
-        }
-        
-    }
+ 
 
     private void sendMessage(String to , String message) throws Exception
     {
@@ -651,7 +640,7 @@ class Client_Non_Encrypted {
     {
         try{
             Client_Non_Encrypted ob = new Client_Non_Encrypted();
-            ob.getIP();
+            ob.hostIP = argv[0];
             ob.registerToSend();
             ob.registerToReceive();
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
@@ -691,17 +680,6 @@ class Client_Non_Encrypted {
         
     }
 
-    public void getIP(){
-        try{
-            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Server IP: ");
-            hostIP = inFromUser.readLine();
-        }catch(Exception e){
-            System.out.println("write correct IP");
-            getIP();
-        }
-        
-    }
 
     private void sendMessage(String to , String message) throws Exception
     {

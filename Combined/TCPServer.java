@@ -262,9 +262,13 @@ class ServerThread extends Thread
         }
         catch(Exception e)
         {
-            System.out.println(e);
-            user_info.remove(my_name);
-            System.out.println("DEREGISTERED " + my_name);
+            // System.out.println(e);
+            try{
+                user_info.remove(my_name);
+                System.out.println("DEREGISTERED " + my_name);            
+            }catch(Exception p){
+                int a = 1;
+            }
             this.stop();
         }
     }
