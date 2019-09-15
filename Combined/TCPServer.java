@@ -125,6 +125,7 @@ class ServerThread extends Thread
                             Pair<String, Socket[]> p = new Pair<String, Socket[]>(username, sockets);
                             user_info.put(username, p);
                             outToClient.writeBytes(serverSentence);
+                            inFromClient.readLine();
                         }
                         else
                         {
@@ -236,6 +237,7 @@ class ServerThread extends Thread
                     }
                     catch(Exception e)
                     {
+                        
                         outToClient.writeBytes("ERROR 101 UNABLE TO SEND\n\n");
                     }
                 }
@@ -256,8 +258,9 @@ class ServerThread extends Thread
                     }                    
                 }
                 else
-                {
-                    outToClient.writeBytes("USER NOT FOUND\n\n");
+                {                 
+                    System.out.println(clientSentence);
+                    //outToClient.writeBytes("USER NOT FOUND\n\n");
                 }
             }
         }
