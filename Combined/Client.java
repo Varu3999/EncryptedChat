@@ -136,8 +136,8 @@ class Client_Signature {
         DataOutputStream outToServer = new DataOutputStream(clientSocketSen.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         outToServer.writeBytes("FETCHKEY " + to + "\n\n");
+        
         String response = inFromServer.readLine();
-        inFromServer.readLine();
         if(!response.equals("KEYIS")){
             System.out.println("User doesn't Exist!!!");
             return;
@@ -444,7 +444,7 @@ class Client_Encrypted {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         outToServer.writeBytes("FETCHKEY " + to + "\n\n");
         String response = inFromServer.readLine();
-        inFromServer.readLine();
+        
         if(!response.equals("KEYIS")){
             System.out.println("User doesn't Exist!!!");
             return;
