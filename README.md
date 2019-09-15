@@ -42,7 +42,7 @@ $ javac Client.java
 $ java Client
 ```
 
-Enter the ip of the server if you are running on the same machine simply put 'localhost' 
+Enter the IP of the server you want your client to connect with. If you are running your client on the same machine, simply put 'localhost'. If you enter an incorrect IP address, the client will try to connect with the server, and after a few seconds, would ask the client to enter the correct IP again. 
 Now Select your Username and Start Chatting with your Friends 😄!!!
 
 # Contributors
