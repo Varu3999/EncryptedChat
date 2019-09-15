@@ -56,18 +56,18 @@ class Client {
                     a[0] = hostIP;
                     cl.main(a);
                 }else{
-                    System.out.println("Wrong Response from server please try again");
+                    System.out.println("Server does not exist. Please try again!");
                     String a[] = new String[1];
                     a[0] = hostIP;
                     main(a);
                 }
             }else{
-                System.out.println("Wrong Response from server please try again");
+                System.out.println("Server does not exist. Please try again!");
                 String a[] = new String[1];
                 main(a);
             }
         }catch(Exception e){
-            System.out.println("Wrong Response from server please try again");
+            System.out.println("Server does not exist. Please try again!");
             String a[] = new String[1];
             main(a);
         }
@@ -122,8 +122,8 @@ class Client_Signature {
                 }
             }
         }catch(Exception e){
-            System.out.println("Server is DOWN!!!!!!!");
-            System.out.println("Try another Server IP!!");
+            //System.out.println("Server is DOWN!!!!!!!");
+            //System.out.println("Try another Server IP!!");
             String a[] = new String[1];        
             main(a);
         }
@@ -177,7 +177,7 @@ class Client_Signature {
                 System.out.println("Message Sent Successfully ....!!");
             }    
         }catch(Exception e){
-            System.out.println(e);
+            //System.out.println(e);
         }
         
     }
@@ -335,7 +335,7 @@ class Receiver_Signature extends Thread{
                     outToServer.writeBytes("RECEIVED " + sender + "\n\n");
                     
                 }catch(Exception e){
-                    System.out.println(e);
+                    //System.out.println(e);
                     
                     System.out.println("Server Is Down");
                     System.exit(0);
@@ -426,8 +426,8 @@ class Client_Encrypted {
                 }
             }
         }catch(Exception e){
-            System.out.println("Server is DOWN!!!!!!!");
-            System.out.println("Try another Server IP!!");
+            //System.out.println("Server is DOWN!!!!!!!");
+            //System.out.println("Try another Server IP!!");
             String a[] = new String[1];        
             main(a);
         }
@@ -475,7 +475,7 @@ class Client_Encrypted {
                 System.out.println("Message Sent Successfully ....!!");
             }    
         }catch(Exception e){
-            System.out.println(e);
+            //System.out.println(e);
         }
         
     }
@@ -672,8 +672,8 @@ class Client_Non_Encrypted {
                 }
             }
         }catch(Exception e){
-            System.out.println("Server is DOWN!!!!!!!");
-            System.out.println("Try another Server IP!!");
+            //System.out.println("Server is DOWN!!!!!!!");
+            //System.out.println("Try another Server IP!!");
             String a[] = new String[1];        
             main(a);
         }
