@@ -160,7 +160,6 @@ class ServerThread extends Thread
                     // Reads the username from the message
                     String user_to_send = split_clientSentence[1];
                     //System.out.println("Sending message to " + user_to_send);
-
                     // Reads the content length from the message
                     clientSentence = inFromClient.readLine();
                     int content_length;
@@ -251,6 +250,7 @@ class ServerThread extends Thread
                     } 
                     else
                     {
+                        System.out.println(user_of_key);
                         outToClient.writeBytes("USER NOT FOUND\n\n");
                     }                    
                 }
@@ -264,7 +264,7 @@ class ServerThread extends Thread
         {
             // System.out.println(e);
             try{
-                user_info.remove(my_name);
+                user_info.remove(my_name);                
                 System.out.println("DEREGISTERED " + my_name);            
             }catch(Exception p){
                 int a = 1;
