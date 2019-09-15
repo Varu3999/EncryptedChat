@@ -73,13 +73,14 @@ class ServerThread extends Thread
     {        
         try
         {
+            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
             while(true)
             {
     
                 String serverSentence = "error";
                 String clientSentence;
-                BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                DataOutputStream  outToClient = new DataOutputStream(socket.getOutputStream());
+                
                 clientSentence = inFromClient.readLine();
                 String[] split_clientSentence = clientSentence.split(" ");
 
