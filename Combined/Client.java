@@ -137,6 +137,7 @@ class Client_Signature {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         outToServer.writeBytes("FETCHKEY " + to + "\n\n");
         String response = inFromServer.readLine();
+        inFromServer.readLine();
         if(!response.equals("KEYIS")){
             System.out.println("User doesn't Exist!!!");
             return;
@@ -443,6 +444,7 @@ class Client_Encrypted {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocketSen.getInputStream()));
         outToServer.writeBytes("FETCHKEY " + to + "\n\n");
         String response = inFromServer.readLine();
+        inFromServer.readLine();
         if(!response.equals("KEYIS")){
             System.out.println("User doesn't Exist!!!");
             return;
@@ -469,7 +471,7 @@ class Client_Encrypted {
                 if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
                     System.out.println("Unable To Send ....");
                 }else{
-                    System.out.println("Header Incomplete ....");
+                    System.out.println("User Not Found ......");
                 }
             }else{
                 System.out.println("Message Sent Successfully ....!!");
@@ -693,7 +695,7 @@ class Client_Non_Encrypted {
             if(splitRes[0].equals("ERROR") && splitRes[1] == "102"){
                 System.out.println("Unable To Send ....");
             }else{
-                System.out.println("Header Incomplete ....");
+                System.out.println("User Not Found ....");
             }
         }else{
             System.out.println("Message Sent Successfully ....!!");
