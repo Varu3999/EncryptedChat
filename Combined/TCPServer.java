@@ -159,7 +159,7 @@ class ServerThread extends Thread
                 {
                     // Reads the username from the message
                     String user_to_send = split_clientSentence[1];
-                    System.out.println("Sending message to " + user_to_send);
+                    //System.out.println("Sending message to " + user_to_send);
 
                     // Reads the content length from the message
                     clientSentence = inFromClient.readLine();
